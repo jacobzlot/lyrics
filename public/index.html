@@ -1,391 +1,744 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyrics Translator</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lyra — Song Lyrics Translator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #0f0f0f;
-            color: #eee;
-            min-height: 100vh;
-        }
+    :root {
+      --ink: #1a1612;
+      --ink-mid: #5c5650;
+      --ink-light: #9c948c;
+      --rule: #e8e2da;
+      --surface: #faf8f5;
+      --white: #ffffff;
+      --accent: #c8472a;
+      --accent-hover: #a83820;
+      --accent-light: #fdf0ed;
+    }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+    html { font-size: 16px; }
 
-        h1 {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 8px;
-            color: #fff;
-        }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface);
+      color: var(--ink);
+      min-height: 100vh;
+    }
 
-        .subtitle {
-            text-align: center;
-            color: #888;
-            margin-bottom: 40px;
-        }
+    /* ── Header ── */
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--rule);
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
 
-        .search-wrapper {
-            position: relative;
-            margin-bottom: 20px;
-        }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        input[type="text"],
-        select {
-            width: 100%;
-            padding: 14px 18px;
-            font-size: 1rem;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 10px;
-            color: #fff;
-            outline: none;
-            transition: border-color 0.2s;
-        }
+    .logo svg { color: var(--accent); }
 
-        input:focus,
-        select:focus {
-            border-color: #6c63ff;
-        }
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
 
-        .autocomplete-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: #1e1e1e;
-            border: 1px solid #333;
-            border-radius: 0 0 10px 10px;
-            z-index: 100;
-            display: none;
-        }
+    .logo-tagline {
+      font-size: 0.75rem;
+      color: var(--ink-light);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-left: 1px solid var(--rule);
+      padding-left: 12px;
+      margin-left: 4px;
+    }
 
-        .autocomplete-dropdown.show {
-            display: block;
-        }
+    /* ── Main layout ── */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
 
-        .ac-item {
-            padding: 12px 18px;
-            cursor: pointer;
-            border-bottom: 1px solid #2a2a2a;
-        }
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem;
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
 
-        .ac-item:hover {
-            background: #2a2a2a;
-        }
+    .page-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
 
-        .ac-item .song-title {
-            font-weight: 600;
-        }
+    .page-subtitle {
+      font-size: 0.9rem;
+      color: var(--ink-mid);
+      font-weight: 300;
+      margin-bottom: 48px;
+      letter-spacing: 0.01em;
+    }
 
-        .ac-item .song-artist {
-            font-size: 0.85rem;
-            color: #888;
-        }
+    /* ── Card ── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      padding: 36px 40px;
+      margin-bottom: 24px;
+    }
 
-        .controls {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 30px;
-            align-items: center;
-        }
+    .card-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-        .lang-select-wrapper {
-            flex: 1;
-        }
+    .card-label svg { flex-shrink: 0; }
 
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 0.85rem;
-            color: #888;
-        }
+    /* ── Search ── */
+    .search-wrapper { position: relative; }
 
-        button {
-            padding: 14px 30px;
-            background: #6c63ff;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-            white-space: nowrap;
-        }
+    .search-input-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 1.5px solid var(--rule);
+      border-radius: 2px;
+      background: var(--white);
+      transition: border-color 0.15s;
+      overflow: visible;
+    }
 
-        button:hover {
-            background: #574fd6;
-        }
+    .search-input-row:focus-within {
+      border-color: var(--ink);
+    }
 
-        button:disabled {
-            background: #444;
-            cursor: not-allowed;
-        }
+    .search-icon {
+      padding: 0 14px;
+      color: var(--ink-light);
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
 
-        .detected-lang {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 10px 16px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            color: #aaa;
-            display: none;
-        }
+    #searchInput {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 14px 0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--ink);
+      background: transparent;
+    }
 
-        .output {
-            display: none;
-        }
+    #searchInput::placeholder { color: var(--ink-light); }
 
-        .output h2 {
-            margin-bottom: 16px;
-            font-size: 1.2rem;
-            color: #ccc;
-        }
+    .clear-btn {
+      padding: 0 14px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--ink-light);
+      display: none;
+      align-items: center;
+    }
 
-        .lyrics-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    .clear-btn.visible { display: flex; }
+    .clear-btn:hover { color: var(--ink); }
 
-        .lyrics-table tr {
-            border-bottom: 1px solid #222;
-        }
+    /* Dropdown */
+    .dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: var(--white);
+      border: 1.5px solid var(--ink);
+      border-radius: 2px;
+      z-index: 200;
+      display: none;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
 
-        .lyrics-table tr:last-child {
-            border-bottom: none;
-        }
+    .dropdown.open { display: block; }
 
-        .lyrics-table td {
-            padding: 10px 14px;
-            line-height: 1.6;
-            vertical-align: top;
-        }
+    .ac-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 18px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--rule);
+      transition: background 0.1s;
+    }
 
-        .lyrics-table td:first-child {
-            color: #bbb;
-            width: 50%;
-            border-right: 1px solid #222;
-        }
+    .ac-item:last-child { border-bottom: none; }
+    .ac-item:hover { background: var(--surface); }
 
-        .lyrics-table td:last-child {
-            color: #7c9fff;
-            width: 50%;
-        }
+    .ac-item svg { color: var(--ink-light); flex-shrink: 0; }
 
-        .lyrics-table tr.blank td {
-            padding: 6px;
-        }
+    .ac-text { flex: 1; min-width: 0; }
 
-        .col-headers th {
-            padding: 8px 14px;
-            text-align: left;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #555;
-            border-bottom: 2px solid #333;
-        }
+    .ac-title {
+      font-size: 0.9rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--ink);
+    }
 
-        .status {
-            text-align: center;
-            color: #888;
-            margin: 20px 0;
-            display: none;
-        }
+    .ac-artist {
+      font-size: 0.78rem;
+      color: var(--ink-light);
+      margin-top: 1px;
+    }
 
-        .error {
-            color: #ff6b6b;
-            background: #2a1515;
-            border: 1px solid #5a2020;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-        }
-    </style>
+    /* ── Controls row ── */
+    .controls-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+      margin-top: 20px;
+    }
+
+    .field-group { display: flex; flex-direction: column; }
+
+    select {
+      border: 1.5px solid var(--rule);
+      border-radius: 2px;
+      padding: 13px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--ink);
+      background: var(--white);
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239c948c' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      transition: border-color 0.15s;
+    }
+
+    select:focus { border-color: var(--ink); }
+
+    /* ── Translate button ── */
+    .translate-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 28px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+      white-space: nowrap;
+    }
+
+    .translate-btn:hover:not(:disabled) { background: var(--accent-hover); }
+    .translate-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* ── Status / Error ── */
+    .status-bar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      font-size: 0.85rem;
+      color: var(--ink-mid);
+      margin-top: 20px;
+    }
+
+    .status-bar.visible { display: flex; }
+
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid var(--rule);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-bar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      background: var(--accent-light);
+      border: 1px solid #f0c0b4;
+      border-radius: 2px;
+      font-size: 0.85rem;
+      color: var(--accent);
+      margin-top: 20px;
+    }
+
+    .error-bar.visible { display: flex; }
+
+    /* ── Result card ── */
+    .result-card {
+      display: none;
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .result-card.visible { display: block; }
+
+    .result-header {
+      padding: 24px 40px;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .result-song-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .result-song-artist {
+      font-size: 0.85rem;
+      color: var(--ink-mid);
+      font-weight: 300;
+      margin-top: 2px;
+    }
+
+    .lang-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      padding: 5px 11px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .lang-badge svg { color: var(--ink-light); }
+
+    /* Col headers */
+    .col-header-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--surface);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .col-header {
+      padding: 10px 40px;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+
+    .col-header:first-child { border-right: 1px solid var(--rule); }
+
+    /* Lyrics table */
+    .lyrics-rows { }
+
+    .lyric-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--rule);
+      transition: background 0.1s;
+    }
+
+    .lyric-row:last-child { border-bottom: none; }
+    .lyric-row:hover { background: #fdfcfa; }
+
+    .lyric-cell {
+      padding: 13px 40px;
+      font-size: 0.875rem;
+      line-height: 1.7;
+      color: var(--ink);
+    }
+
+    .lyric-cell.original {
+      border-right: 1px solid var(--rule);
+      color: var(--ink-mid);
+    }
+
+    .lyric-cell.translated { color: var(--ink); font-weight: 400; }
+
+    .lyric-row.blank .lyric-cell { padding: 6px 40px; }
+
+    /* RTL support for Hebrew */
+    .lyric-cell[dir="rtl"] {
+      text-align: right;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      font-size: 0.75rem;
+      color: var(--ink-light);
+      border-top: 1px solid var(--rule);
+      margin-top: 40px;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 0 20px; }
+      .logo-tagline { display: none; }
+      main { padding: 32px 16px 60px; }
+      .page-title { font-size: 1.8rem; }
+      .card { padding: 24px 20px; }
+      .controls-row { grid-template-columns: 1fr; }
+      .translate-btn { width: 100%; justify-content: center; }
+      .col-header, .lyric-cell { padding-left: 20px; padding-right: 20px; }
+      .result-header { padding: 20px; }
+      .lyric-cell.original { border-right: none; border-bottom: 1px solid var(--rule); }
+      .lyric-row { grid-template-columns: 1fr; }
+      .col-header-row { grid-template-columns: 1fr; }
+      .col-header:first-child { border-right: none; border-bottom: 1px solid var(--rule); }
+    }
+  </style>
 </head>
-
 <body>
-    <div class="container">
-        <h1>🎵 Lyrics Translator</h1>
-        <p class="subtitle">Search any song and translate its lyrics line by line</p>
 
-        <!-- Search -->
-        <div class="search-wrapper">
-            <label>Search for a song</label>
-            <input type="text" id="searchInput" placeholder="e.g. Bohemian Rhapsody, La Vie En Rose..."
-                autocomplete="off">
-            <div class="autocomplete-dropdown" id="dropdown"></div>
-        </div>
+<header>
+  <div class="logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18V5l12-2v13"/>
+      <circle cx="6" cy="18" r="3"/>
+      <circle cx="18" cy="16" r="3"/>
+    </svg>
+    <span class="logo-text">Lyra</span>
+    <span class="logo-tagline">Lyrics Translator</span>
+  </div>
+</header>
 
-        <!-- Language + Translate button -->
-        <div class="controls">
-            <div class="lang-select-wrapper">
-                <label>Translate to</label>
-                <select id="targetLang">
-                    <option value="English">English</option>
-                    <option value="Spanish">Spanish</option>
-                    <option value="French">French</option>
-                    <option value="German">German</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Portuguese">Portuguese</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Korean">Korean</option>
-                    <option value="Mandarin Chinese">Mandarin Chinese</option>
-                    <option value="Arabic">Arabic</option>
-                    <option value="Russian">Russian</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="Dutch">Dutch</option>
-                    <option value="Swedish">Swedish</option>
-                </select>
-            </div>
-            <div style="padding-top: 22px;">
-                <button id="translateBtn" disabled>Translate</button>
-            </div>
-        </div>
+<main>
+  <h1 class="page-title">Translate any song,<br><em>line by line.</em></h1>
+  <p class="page-subtitle">Search for a song, choose your language, and read along.</p>
 
-        <div class="error" id="errorMsg"></div>
-        <div class="status" id="status">⏳ Fetching lyrics and translating...</div>
-        <div class="detected-lang" id="detectedLang"></div>
-
-        <!-- Output -->
-        <div class="output" id="output">
-            <h2 id="songTitle"></h2>
-            <table class="lyrics-table">
-                <thead>
-                    <tr class="col-headers">
-                        <th id="originalHeader">Original</th>
-                        <th id="translatedHeader">Translation</th>
-                    </tr>
-                </thead>
-                <tbody id="lyricsBody"></tbody>
-            </table>
-        </div>
+  <!-- Search card -->
+  <div class="card">
+    <div class="card-label">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+      </svg>
+      Find a Song
     </div>
 
-    <script>
-        let selectedSong = null;
-        let searchTimeout = null;
+    <div class="search-wrapper">
+      <div class="search-input-row">
+        <span class="search-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+        </span>
+        <input type="text" id="searchInput" placeholder="Artist, song title, or both…" autocomplete="off" spellcheck="false">
+        <button class="clear-btn" id="clearBtn" type="button" title="Clear">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="dropdown" id="dropdown"></div>
+    </div>
 
-        const searchInput = document.getElementById('searchInput');
-        const dropdown = document.getElementById('dropdown');
-        const translateBtn = document.getElementById('translateBtn');
-        const output = document.getElementById('output');
-        const lyricsBody = document.getElementById('lyricsBody');
-        const status = document.getElementById('status');
-        const errorMsg = document.getElementById('errorMsg');
-        const detectedLang = document.getElementById('detectedLang');
+    <!-- Language + Translate -->
+    <div class="controls-row">
+      <div class="field-group">
+        <div class="card-label" style="margin-bottom:8px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/>
+          </svg>
+          Translate To
+        </div>
+        <select id="targetLang">
+          <option value="English">English</option>
+          <option value="Hebrew">Hebrew — עברית</option>
+          <option value="Spanish">Spanish — Español</option>
+          <option value="French">French — Français</option>
+          <option value="German">German — Deutsch</option>
+          <option value="Italian">Italian — Italiano</option>
+          <option value="Portuguese">Portuguese — Português</option>
+          <option value="Japanese">Japanese — 日本語</option>
+          <option value="Korean">Korean — 한국어</option>
+          <option value="Mandarin Chinese">Mandarin — 普通话</option>
+          <option value="Arabic">Arabic — العربية</option>
+          <option value="Russian">Russian — Русский</option>
+          <option value="Hindi">Hindi — हिन्दी</option>
+          <option value="Dutch">Dutch — Nederlands</option>
+          <option value="Swedish">Swedish — Svenska</option>
+          <option value="Turkish">Turkish — Türkçe</option>
+          <option value="Polish">Polish — Polski</option>
+        </select>
+      </div>
 
-        // Autocomplete
-        searchInput.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            const q = searchInput.value.trim();
-            if (q.length < 2) { dropdown.classList.remove('show'); return; }
+      <button class="translate-btn" id="translateBtn" disabled>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+        Translate
+      </button>
+    </div>
+  </div>
 
-            searchTimeout = setTimeout(async () => {
-                const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-                const songs = await res.json();
+  <!-- Status -->
+  <div class="status-bar" id="statusBar">
+    <div class="spinner"></div>
+    Fetching lyrics and translating…
+  </div>
 
-                dropdown.innerHTML = '';
-                if (songs.length === 0) { dropdown.classList.remove('show'); return; }
+  <!-- Error -->
+  <div class="error-bar" id="errorBar">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+    </svg>
+    <span id="errorText"></span>
+  </div>
 
-                songs.forEach(song => {
-                    const div = document.createElement('div');
-                    div.className = 'ac-item';
-                    div.innerHTML = `<div class="song-title">${song.title}</div><div class="song-artist">${song.artist}</div>`;
-                    div.addEventListener('click', () => {
-                        selectedSong = song;
-                        searchInput.value = `${song.title} — ${song.artist}`;
-                        dropdown.classList.remove('show');
-                        translateBtn.disabled = false;
-                    });
-                    dropdown.appendChild(div);
-                });
-                dropdown.classList.add('show');
-            }, 300);
-        });
+  <!-- Result -->
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <div>
+        <div class="result-song-title" id="resultTitle"></div>
+        <div class="result-song-artist" id="resultArtist"></div>
+      </div>
+      <div class="lang-badge" id="langBadge">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/>
+        </svg>
+        <span id="langBadgeText"></span>
+      </div>
+    </div>
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-wrapper')) dropdown.classList.remove('show');
-        });
+    <div class="col-header-row">
+      <div class="col-header" id="colOriginal">Original</div>
+      <div class="col-header" id="colTranslated">Translation</div>
+    </div>
 
-        // Translate
-        translateBtn.addEventListener('click', async () => {
-            if (!selectedSong) return;
+    <div class="lyrics-rows" id="lyricsRows"></div>
+  </div>
+</main>
 
-            const targetLang = document.getElementById('targetLang').value;
-            translateBtn.disabled = true;
-            status.style.display = 'block';
-            output.style.display = 'none';
-            detectedLang.style.display = 'none';
-            errorMsg.style.display = 'none';
+<footer>
+  Lyrics sourced via lyrics.ovh &nbsp;·&nbsp; Translation powered by OpenAI
+</footer>
 
-            try {
-                // Step 1: Get lyrics
-                const lyricsRes = await fetch(
-                    `/api/lyrics?artist=${encodeURIComponent(selectedSong.artistSlug)}&title=${encodeURIComponent(selectedSong.titleSlug)}`
-                );
-                const lyricsData = await lyricsRes.json();
-                if (lyricsData.error) throw new Error(lyricsData.error);
+<script>
+  const RTL_LANGUAGES = new Set(['Hebrew', 'Arabic']);
 
-                // Step 2: Translate
-                const transRes = await fetch('/api/translate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ lyrics: lyricsData.lyrics, targetLanguage: targetLang })
-                });
-                const transData = await transRes.json();
-                if (transData.error) throw new Error(transData.error);
+  let selectedSong = null;
+  let searchTimer = null;
 
-                // Render
-                detectedLang.textContent = `🌐 Detected language: ${transData.sourceLanguage}`;
-                detectedLang.style.display = 'block';
+  const searchInput  = document.getElementById('searchInput');
+  const clearBtn     = document.getElementById('clearBtn');
+  const dropdown     = document.getElementById('dropdown');
+  const translateBtn = document.getElementById('translateBtn');
+  const statusBar    = document.getElementById('statusBar');
+  const errorBar     = document.getElementById('errorBar');
+  const errorText    = document.getElementById('errorText');
+  const resultCard   = document.getElementById('resultCard');
+  const lyricsRows   = document.getElementById('lyricsRows');
 
-                document.getElementById('songTitle').textContent =
-                    `${selectedSong.title} — ${selectedSong.artist}`;
-                document.getElementById('originalHeader').textContent = transData.sourceLanguage;
-                document.getElementById('translatedHeader').textContent = targetLang;
+  // ── Search / Autocomplete ──────────────────────────────────────
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim();
+    clearBtn.classList.toggle('visible', q.length > 0);
 
-                lyricsBody.innerHTML = '';
-                transData.lines.forEach(line => {
-                    const tr = document.createElement('tr');
-                    if (!line.original && !line.translated) {
-                        tr.className = 'blank';
-                        tr.innerHTML = '<td>&nbsp;</td><td>&nbsp;</td>';
-                    } else {
-                        tr.innerHTML = `<td>${escapeHtml(line.original)}</td><td>${escapeHtml(line.translated)}</td>`;
-                    }
-                    lyricsBody.appendChild(tr);
-                });
+    if (q.length < 2) { closeDropdown(); return; }
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => fetchSuggestions(q), 280);
+  });
 
-                output.style.display = 'block';
-            } catch (err) {
-                errorMsg.textContent = `Error: ${err.message}`;
-                errorMsg.style.display = 'block';
-            } finally {
-                status.style.display = 'none';
-                translateBtn.disabled = false;
-            }
-        });
+  async function fetchSuggestions(q) {
+    try {
+      const res  = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+      const songs = await res.json();
+      renderDropdown(songs);
+    } catch { closeDropdown(); }
+  }
 
-        function escapeHtml(str) {
-            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        }
-    </script>
+  function renderDropdown(songs) {
+    dropdown.innerHTML = '';
+    if (!songs.length) { closeDropdown(); return; }
+
+    songs.forEach(song => {
+      const el = document.createElement('div');
+      el.className = 'ac-item';
+      el.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+        </svg>
+        <div class="ac-text">
+          <div class="ac-title">${esc(song.title)}</div>
+          <div class="ac-artist">${esc(song.artist)}</div>
+        </div>`;
+      el.addEventListener('click', () => selectSong(song));
+      dropdown.appendChild(el);
+    });
+    dropdown.classList.add('open');
+  }
+
+  function selectSong(song) {
+    selectedSong = song;
+    searchInput.value = `${song.title} — ${song.artist}`;
+    clearBtn.classList.add('visible');
+    closeDropdown();
+    translateBtn.disabled = false;
+    translateBtn.focus();
+  }
+
+  clearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    clearBtn.classList.remove('visible');
+    selectedSong = null;
+    translateBtn.disabled = true;
+    closeDropdown();
+    searchInput.focus();
+  });
+
+  function closeDropdown() {
+    dropdown.classList.remove('open');
+    dropdown.innerHTML = '';
+  }
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-wrapper')) closeDropdown();
+  });
+
+  // ── Translate ──────────────────────────────────────────────────
+  translateBtn.addEventListener('click', runTranslation);
+
+  async function runTranslation() {
+    if (!selectedSong) return;
+
+    const targetLang = document.getElementById('targetLang').value;
+
+    translateBtn.disabled = true;
+    statusBar.classList.add('visible');
+    errorBar.classList.remove('visible');
+    resultCard.classList.remove('visible');
+
+    try {
+      // 1. Fetch lyrics
+      const lr = await fetch(
+        `/api/lyrics?artist=${encodeURIComponent(selectedSong.artistSlug)}&title=${encodeURIComponent(selectedSong.titleSlug)}`
+      );
+      const ld = await lr.json();
+      if (ld.error) throw new Error(ld.error);
+
+      // 2. Translate
+      const tr = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lyrics: ld.lyrics, targetLanguage: targetLang })
+      });
+      const td = await tr.json();
+      if (td.error) throw new Error(td.error);
+
+      renderResult(td, targetLang);
+    } catch (err) {
+      errorText.textContent = err.message;
+      errorBar.classList.add('visible');
+    } finally {
+      statusBar.classList.remove('visible');
+      translateBtn.disabled = false;
+    }
+  }
+
+  function renderResult(data, targetLang) {
+    const isTargetRTL = RTL_LANGUAGES.has(targetLang);
+    const isSourceRTL = RTL_LANGUAGES.has(data.sourceLanguage);
+
+    document.getElementById('resultTitle').textContent = selectedSong.title;
+    document.getElementById('resultArtist').textContent = selectedSong.artist;
+    document.getElementById('langBadgeText').textContent =
+      `${data.sourceLanguage} → ${targetLang}`;
+
+    document.getElementById('colOriginal').textContent = data.sourceLanguage;
+    document.getElementById('colTranslated').textContent = targetLang;
+
+    lyricsRows.innerHTML = '';
+
+    data.lines.forEach(line => {
+      const row = document.createElement('div');
+
+      if (!line.original && !line.translated) {
+        row.className = 'lyric-row blank';
+        row.innerHTML = '<div class="lyric-cell original"></div><div class="lyric-cell translated"></div>';
+      } else {
+        row.className = 'lyric-row';
+        const origCell = document.createElement('div');
+        origCell.className = 'lyric-cell original';
+        origCell.textContent = line.original;
+        if (isSourceRTL) origCell.setAttribute('dir', 'rtl');
+
+        const transCell = document.createElement('div');
+        transCell.className = 'lyric-cell translated';
+        transCell.textContent = line.translated;
+        if (isTargetRTL) transCell.setAttribute('dir', 'rtl');
+
+        row.appendChild(origCell);
+        row.appendChild(transCell);
+      }
+      lyricsRows.appendChild(row);
+    });
+
+    resultCard.classList.add('visible');
+    resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function esc(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+</script>
 </body>
-
 </html>
