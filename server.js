@@ -12,7 +12,7 @@ app.use(express.static('public'));
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// 1. AUTOCOMPLETE — search Genius for songs (includes album thumbnail)
+// 1. AUTOCOMPLETE — search Genius for songs
 app.get('/api/search', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.json([]);
@@ -28,8 +28,7 @@ app.get('/api/search', async (req, res) => {
       title: hit.result.title,
       artist: hit.result.primary_artist.name,
       artistSlug: hit.result.primary_artist.name,
-      titleSlug: hit.result.title,
-      thumbnail: hit.result.song_art_image_thumbnail_url || hit.result.header_image_thumbnail_url || null
+      titleSlug: hit.result.title
     }));
 
     res.json(hits);
@@ -39,40 +38,30 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
-// 2. FETCH LYRICS — Genius scrape with full browser headers, fallback to lrclib
+// 2. FETCH LYRICS — scrapes Genius song page
 app.get('/api/lyrics', async (req, res) => {
   const { artist, title } = req.query;
 
-  // First try Genius scrape
   try {
+    // Step 1: Search Genius for the song URL
     const searchRes = await axios.get('https://api.genius.com/search', {
       params: { q: `${title} ${artist}` },
       headers: { Authorization: `Bearer ${process.env.GENIUS_TOKEN}` }
     });
 
     const hit = searchRes.data.response.hits[0];
-    if (!hit) throw new Error('No hit found');
+    if (!hit) return res.status(404).json({ error: 'Song not found on Genius' });
 
     const songUrl = hit.result.url;
 
+    // Step 2: Fetch the Genius song page
     const pageRes = await axios.get(songUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Sec-Fetch-User': '?1',
-        'Cache-Control': 'max-age=0',
-        'Referer': 'https://www.google.com/'
-      },
-      timeout: 10000
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
     });
 
+    // Step 3: Parse lyrics using cheerio
     const $ = cheerio.load(pageRes.data);
     let lyrics = '';
 
@@ -81,44 +70,14 @@ app.get('/api/lyrics', async (req, res) => {
       lyrics += $(el).text() + '\n';
     });
 
-    if (lyrics.trim()) {
-      return res.json({ lyrics: lyrics.trim() });
+    if (!lyrics.trim()) {
+      return res.status(404).json({ error: 'Could not extract lyrics from Genius' });
     }
 
-    // Genius returned page but no lyrics container — fall through to fallback
-    throw new Error('No lyrics container found');
-
-  } catch (geniusErr) {
-    console.error('Genius scrape failed:', geniusErr.message);
-
-    // Fallback: lrclib.net
-    try {
-      const lrclibRes = await axios.get('https://lrclib.net/api/get', {
-        params: { artist_name: artist, track_name: title },
-        timeout: 8000
-      });
-
-      const lyrics = lrclibRes.data.plainLyrics || lrclibRes.data.syncedLyrics;
-      if (lyrics) return res.json({ lyrics });
-
-      throw new Error('No lyrics in lrclib response');
-
-    } catch (lrclibErr) {
-      console.error('lrclib fallback failed:', lrclibErr.message);
-
-      // Final fallback: lyrics.ovh
-      try {
-        const ovhRes = await axios.get(
-          `https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(title)}`,
-          { timeout: 8000 }
-        );
-        if (ovhRes.data.lyrics) return res.json({ lyrics: ovhRes.data.lyrics });
-      } catch (ovhErr) {
-        console.error('lyrics.ovh fallback failed:', ovhErr.message);
-      }
-
-      res.status(404).json({ error: 'Lyrics not found. Try searching for the song with a slightly different title.' });
-    }
+    res.json({ lyrics: lyrics.trim() });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch lyrics' });
   }
 });
 
@@ -136,9 +95,9 @@ app.post('/api/translate', async (req, res) => {
       messages: [
         {
           role: 'system',
-          content: `You are a professional song translator.
+          content: `You are a professional song translator. 
 Your task:
-1. Detect the source language of the lyrics.
+1. First, detect the source language of the lyrics.
 2. Translate each line into ${targetLanguage}, preserving the poetic feel and meaning.
 3. Return ONLY valid JSON in this exact format, nothing else:
 {
@@ -160,15 +119,6 @@ For blank lines between verses, use: { "original": "", "translated": "" }`
     });
 
     const result = JSON.parse(completion.choices[0].message.content);
-
-    // Safety: GPT sometimes wraps the array under a different key
-    if (!result.lines || !Array.isArray(result.lines)) {
-      const key = Object.keys(result).find(k => Array.isArray(result[k]));
-      result.lines = key ? result[key] : [];
-    }
-
-    if (!result.sourceLanguage) result.sourceLanguage = 'Unknown';
-
     res.json(result);
   } catch (err) {
     console.error(err);
