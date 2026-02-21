@@ -305,19 +305,22 @@
             border-color: var(--ink);
         }
 
-        .lang-flag {
+        .lang-flag,
+        .lang-flag-placeholder {
             width: 20px;
             height: 20px;
             border-radius: 999px;
+            flex-shrink: 0;
+        }
+
+        .lang-flag {
             object-fit: cover;
+            display: block;
+            border: 1px solid rgba(0, 0, 0, 0.08);
         }
 
         .lang-flag-placeholder {
-            width: 20px;
-            height: 15px;
             background: var(--rule);
-            border-radius: 1px;
-            flex-shrink: 0;
         }
 
         .lang-trigger-text {
