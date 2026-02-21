@@ -79,33 +79,13 @@ app.get('/api/lyrics', async (req, res) => {
   }
 });
 
-// 3. TRANSLATE (with optional transliteration)
+// 3. DETECT + TRANSLATE — single GPT call
 app.post('/api/translate', async (req, res) => {
-  const { lyrics, targetLanguage, transliterate } = req.body;
+  const { lyrics, targetLanguage } = req.body;
 
   if (!lyrics || !targetLanguage) {
     return res.status(400).json({ error: 'Missing lyrics or target language' });
   }
-
-  const transliterateInstruction = transliterate
-    ? `Also include a "transliterated" field for each line — this is the pronunciation of the ORIGINAL line written in Latin/Roman characters so an English speaker could read it aloud. If the original is already in Latin script, set "transliterated" to "".`
-    : '';
-
-  const jsonFormat = transliterate
-    ? `{
-  "sourceLanguage": "detected language name",
-  "lines": [
-    { "original": "original line", "transliterated": "romanized pronunciation", "translated": "translated line" },
-    ...
-  ]
-}`
-    : `{
-  "sourceLanguage": "detected language name",
-  "lines": [
-    { "original": "original line", "translated": "translated line" },
-    ...
-  ]
-}`;
 
   try {
     const completion = await openai.chat.completions.create({
@@ -117,10 +97,15 @@ app.post('/api/translate', async (req, res) => {
 Your task:
 1. Detect the source language of the lyrics.
 2. Translate each line into ${targetLanguage}, preserving the poetic feel and meaning.
-${transliterateInstruction}
 3. Return ONLY valid JSON in this exact format, nothing else:
-${jsonFormat}
-For blank lines between verses, use the same structure with all fields as empty strings "".`
+{
+  "sourceLanguage": "detected language name",
+  "lines": [
+    { "original": "original line", "translated": "translated line" },
+    ...
+  ]
+}
+For blank lines between verses, use: { "original": "", "translated": "" }`
         },
         {
           role: 'user',
@@ -139,10 +124,7 @@ For blank lines between verses, use the same structure with all fields as empty 
       result.lines = key ? result[key] : [];
     }
 
-    // Ensure sourceLanguage always exists
-    if (!result.sourceLanguage) {
-      result.sourceLanguage = 'Unknown';
-    }
+    if (!result.sourceLanguage) result.sourceLanguage = 'Unknown';
 
     res.json(result);
   } catch (err) {

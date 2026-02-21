@@ -19,8 +19,6 @@
       --accent: #c8472a;
       --accent-hover: #a83820;
       --accent-light: #fdf0ed;
-      --btn-secondary: #f2ede8;
-      --btn-secondary-hover: #e8e0d8;
     }
 
     body {
@@ -193,7 +191,6 @@
       justify-content: center;
       color: var(--rule);
     }
-
     .ac-text { flex: 1; min-width: 0; }
     .ac-title {
       font-size: 0.88rem;
@@ -208,7 +205,7 @@
     /* Controls */
     .controls-row {
       display: grid;
-      grid-template-columns: 1fr auto auto;
+      grid-template-columns: 1fr auto;
       gap: 14px;
       align-items: end;
       margin-top: 22px;
@@ -282,22 +279,21 @@
     .lang-option:last-child { border-bottom: none; }
     .lang-option:hover { background: var(--surface); }
     .lang-option.selected { background: var(--accent-light); }
-
     .lang-option-name { font-size: 0.875rem; color: var(--ink); flex: 1; }
     .lang-option-native { font-size: 0.78rem; color: var(--ink-light); }
 
-    /* Buttons */
+    /* Translate button */
     .translate-btn {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 13px 22px;
+      padding: 13px 26px;
       background: var(--accent);
       color: white;
       border: none;
       border-radius: 2px;
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.855rem;
+      font-size: 0.875rem;
       font-weight: 500;
       letter-spacing: 0.03em;
       cursor: pointer;
@@ -307,27 +303,6 @@
     }
     .translate-btn:hover:not(:disabled) { background: var(--accent-hover); }
     .translate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .transliterate-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 13px 18px;
-      background: var(--btn-secondary);
-      color: var(--ink);
-      border: 1.5px solid var(--rule);
-      border-radius: 2px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.855rem;
-      font-weight: 500;
-      letter-spacing: 0.03em;
-      cursor: pointer;
-      transition: background 0.15s, opacity 0.15s;
-      white-space: nowrap;
-      height: 47px;
-    }
-    .transliterate-btn:hover:not(:disabled) { background: var(--btn-secondary-hover); }
-    .transliterate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     /* Status / Error */
     .status-bar {
@@ -435,12 +410,10 @@
 
     .col-header-row {
       display: grid;
+      grid-template-columns: 1fr 1fr;
       background: var(--surface);
       border-bottom: 1px solid var(--rule);
     }
-    .col-header-row.two-col   { grid-template-columns: 1fr 1fr; }
-    .col-header-row.three-col { grid-template-columns: 1fr 1fr 1fr; }
-
     .col-header {
       padding: 10px 32px;
       font-size: 0.67rem;
@@ -454,11 +427,10 @@
 
     .lyric-row {
       display: grid;
+      grid-template-columns: 1fr 1fr;
       border-bottom: 1px solid var(--rule);
       transition: background 0.1s;
     }
-    .lyric-row.two-col   { grid-template-columns: 1fr 1fr; }
-    .lyric-row.three-col { grid-template-columns: 1fr 1fr 1fr; }
     .lyric-row:last-child { border-bottom: none; }
     .lyric-row:hover { background: #fdfcfa; }
 
@@ -469,9 +441,8 @@
       border-right: 1px solid var(--rule);
     }
     .lyric-cell:last-child { border-right: none; }
-    .lyric-cell.original      { color: var(--ink-mid); }
-    .lyric-cell.transliterated { color: var(--ink-light); font-style: italic; font-size: 0.83rem; }
-    .lyric-cell.translated    { color: var(--ink); }
+    .lyric-cell.original  { color: var(--ink-mid); }
+    .lyric-cell.translated { color: var(--ink); }
     .lyric-row.blank .lyric-cell { padding-top: 5px; padding-bottom: 5px; }
     .lyric-cell[dir="rtl"] { text-align: right; }
 
@@ -491,10 +462,10 @@
       .page-title { font-size: 1.8rem; }
       .card { padding: 24px 20px; }
       .controls-row { grid-template-columns: 1fr; }
-      .translate-btn, .transliterate-btn { width: 100%; justify-content: center; }
+      .translate-btn { width: 100%; justify-content: center; }
       .result-header { padding: 20px; }
       .col-header, .lyric-cell { padding-left: 16px; padding-right: 16px; }
-      .lyric-row, .col-header-row { grid-template-columns: 1fr !important; }
+      .lyric-row, .col-header-row { grid-template-columns: 1fr; }
       .lyric-cell { border-right: none; border-bottom: 1px solid var(--rule); }
       .lyric-cell:last-child { border-bottom: none; }
       .col-header { border-right: none; border-bottom: 1px solid var(--rule); }
@@ -572,21 +543,12 @@
           Translate
         </button>
       </div>
-
-      <div style="padding-top:22px;">
-        <button class="transliterate-btn" id="transliterateBtn" disabled>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/>
-          </svg>
-          + Transliterate
-        </button>
-      </div>
     </div>
   </div>
 
   <div class="status-bar" id="statusBar">
     <div class="spinner"></div>
-    <span id="statusText">Fetching lyrics and translating…</span>
+    Fetching lyrics and translating…
   </div>
 
   <div class="error-bar" id="errorBar">
@@ -610,9 +572,8 @@
         <span id="langBadgeText"></span>
       </div>
     </div>
-    <div class="col-header-row two-col" id="colHeaderRow">
+    <div class="col-header-row">
       <div class="col-header" id="colOriginal">Original</div>
-      <div class="col-header" id="colTransliterated" style="display:none">Pronunciation</div>
       <div class="col-header" id="colTranslated">Translation</div>
     </div>
     <div id="lyricsRows"></div>
@@ -647,29 +608,25 @@
   ];
 
   const RTL_LANGS = new Set(['Hebrew', 'Arabic']);
-
   const flagUrl = code => `https://flagcdn.com/20x15/${code}.png`;
 
   let selectedSong = null;
   let selectedLang = LANGUAGES[0];
   let searchTimer  = null;
 
-  const searchInput      = document.getElementById('searchInput');
-  const clearBtn         = document.getElementById('clearBtn');
-  const dropdown         = document.getElementById('dropdown');
-  const langTrigger      = document.getElementById('langTrigger');
-  const triggerFlag      = document.getElementById('triggerFlag');
-  const triggerText      = document.getElementById('triggerText');
-  const langDropdown     = document.getElementById('langDropdown');
-  const translateBtn     = document.getElementById('translateBtn');
-  const transliterateBtn = document.getElementById('transliterateBtn');
-  const statusBar        = document.getElementById('statusBar');
-  const statusText       = document.getElementById('statusText');
-  const errorBar         = document.getElementById('errorBar');
-  const errorTextEl      = document.getElementById('errorText');
-  const resultCard       = document.getElementById('resultCard');
-  const lyricsRows       = document.getElementById('lyricsRows');
-  const colHeaderRow     = document.getElementById('colHeaderRow');
+  const searchInput  = document.getElementById('searchInput');
+  const clearBtn     = document.getElementById('clearBtn');
+  const dropdown     = document.getElementById('dropdown');
+  const langTrigger  = document.getElementById('langTrigger');
+  const triggerFlag  = document.getElementById('triggerFlag');
+  const triggerText  = document.getElementById('triggerText');
+  const langDropdown = document.getElementById('langDropdown');
+  const translateBtn = document.getElementById('translateBtn');
+  const statusBar    = document.getElementById('statusBar');
+  const errorBar     = document.getElementById('errorBar');
+  const errorTextEl  = document.getElementById('errorText');
+  const resultCard   = document.getElementById('resultCard');
+  const lyricsRows   = document.getElementById('lyricsRows');
 
   // ── Language dropdown ──────────────────────────────────────────
   function buildLangDropdown() {
@@ -762,7 +719,6 @@
     clearBtn.classList.add('visible');
     closeSearchDropdown();
     translateBtn.disabled = false;
-    transliterateBtn.disabled = false;
   }
 
   clearBtn.addEventListener('click', () => {
@@ -770,7 +726,6 @@
     clearBtn.classList.remove('visible');
     selectedSong = null;
     translateBtn.disabled = true;
-    transliterateBtn.disabled = true;
     closeSearchDropdown();
     searchInput.focus();
   });
@@ -781,17 +736,12 @@
   }
 
   // ── Translation ────────────────────────────────────────────────
-  translateBtn.addEventListener('click',     () => runTranslation(false));
-  transliterateBtn.addEventListener('click', () => runTranslation(true));
+  translateBtn.addEventListener('click', runTranslation);
 
-  async function runTranslation(withTranslit) {
+  async function runTranslation() {
     if (!selectedSong) return;
 
     translateBtn.disabled = true;
-    transliterateBtn.disabled = true;
-    statusText.textContent = withTranslit
-      ? 'Fetching lyrics, translating and transliterating…'
-      : 'Fetching lyrics and translating…';
     statusBar.classList.add('visible');
     errorBar.classList.remove('visible');
     resultCard.classList.remove('visible');
@@ -806,28 +756,22 @@
       const tr = await fetch('/api/translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          lyrics: ld.lyrics,
-          targetLanguage: selectedLang.value,
-          transliterate: withTranslit
-        })
+        body: JSON.stringify({ lyrics: ld.lyrics, targetLanguage: selectedLang.value })
       });
       const td = await tr.json();
       if (td.error) throw new Error(td.error);
 
-      renderResult(td, withTranslit);
+      renderResult(td);
     } catch (err) {
       errorTextEl.textContent = err.message;
       errorBar.classList.add('visible');
     } finally {
       statusBar.classList.remove('visible');
       translateBtn.disabled = false;
-      transliterateBtn.disabled = false;
     }
   }
 
-  function renderResult(data, withTranslit) {
-    // Safety guard — if lines is missing or not an array, show error
+  function renderResult(data) {
     if (!data.lines || !Array.isArray(data.lines)) {
       errorTextEl.textContent = 'Translation returned an unexpected format. Please try again.';
       errorBar.classList.add('visible');
@@ -836,7 +780,6 @@
 
     const isTargetRTL = RTL_LANGS.has(selectedLang.value);
     const isSourceRTL = RTL_LANGS.has(data.sourceLanguage);
-    const colCount    = withTranslit ? 'three-col' : 'two-col';
 
     document.getElementById('resultTitle').textContent  = selectedSong.title;
     document.getElementById('resultArtist').textContent = selectedSong.artist;
@@ -854,31 +797,21 @@
     document.getElementById('langBadgeText').textContent =
       `${data.sourceLanguage || 'Unknown'} → ${selectedLang.label}`;
 
-    colHeaderRow.className = `col-header-row ${colCount}`;
-    document.getElementById('colOriginal').textContent   = data.sourceLanguage || 'Original';
+    document.getElementById('colOriginal').textContent  = data.sourceLanguage || 'Original';
     document.getElementById('colTranslated').textContent = selectedLang.label;
-    const colTranslit = document.getElementById('colTransliterated');
-    colTranslit.style.display = withTranslit ? '' : 'none';
 
     lyricsRows.innerHTML = '';
 
     data.lines.forEach(line => {
       const isEmpty = !line.original && !line.translated;
       const row = document.createElement('div');
-      row.className = `lyric-row ${colCount}${isEmpty ? ' blank' : ''}`;
+      row.className = `lyric-row${isEmpty ? ' blank' : ''}`;
 
       const origCell = document.createElement('div');
       origCell.className = 'lyric-cell original';
       origCell.textContent = line.original || '';
       if (isSourceRTL) origCell.setAttribute('dir', 'rtl');
       row.appendChild(origCell);
-
-      if (withTranslit) {
-        const translitCell = document.createElement('div');
-        translitCell.className = 'lyric-cell transliterated';
-        translitCell.textContent = line.transliterated || '';
-        row.appendChild(translitCell);
-      }
 
       const transCell = document.createElement('div');
       transCell.className = 'lyric-cell translated';
