@@ -417,6 +417,106 @@
       font-family: 'DM Sans', sans-serif;
     }
 
+    /* ── Album art thumbnail in search dropdown ── */
+    .ac-thumb {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+    }
+
+    .ac-thumb-placeholder {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--ink-light);
+    }
+
+    /* ── Custom language select ── */
+    .lang-select-wrapper {
+      position: relative;
+    }
+
+    .lang-select-trigger {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1.5px solid var(--rule);
+      border-radius: 2px;
+      padding: 11px 36px 11px 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--ink);
+      background: var(--white);
+      cursor: pointer;
+      outline: none;
+      width: 100%;
+      text-align: left;
+      transition: border-color 0.15s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239c948c' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+    }
+
+    .lang-select-trigger:focus,
+    .lang-select-wrapper.open .lang-select-trigger {
+      border-color: var(--ink);
+    }
+
+    .lang-flag {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--rule);
+      background: var(--surface);
+    }
+
+    .lang-select-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: var(--white);
+      border: 1.5px solid var(--ink);
+      border-radius: 2px;
+      z-index: 300;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      max-height: 260px;
+      overflow-y: auto;
+    }
+
+    .lang-select-wrapper.open .lang-select-dropdown {
+      display: block;
+    }
+
+    .lang-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--rule);
+      font-size: 0.88rem;
+      color: var(--ink);
+      transition: background 0.1s;
+    }
+
+    .lang-option:last-child { border-bottom: none; }
+    .lang-option:hover { background: var(--surface); }
+    .lang-option.selected { background: var(--accent-light); }
+
     /* ── Footer ── */
     footer {
       text-align: center;
@@ -497,25 +597,35 @@
           </svg>
           Translate To
         </div>
-        <select id="targetLang">
+        <!-- Hidden real select for JS compatibility -->
+        <select id="targetLang" style="display:none;">
           <option value="English">English</option>
-          <option value="Hebrew">Hebrew — עברית</option>
-          <option value="Spanish">Spanish — Español</option>
-          <option value="French">French — Français</option>
-          <option value="German">German — Deutsch</option>
-          <option value="Italian">Italian — Italiano</option>
-          <option value="Portuguese">Portuguese — Português</option>
-          <option value="Japanese">Japanese — 日本語</option>
-          <option value="Korean">Korean — 한국어</option>
-          <option value="Mandarin Chinese">Mandarin — 普通话</option>
-          <option value="Arabic">Arabic — العربية</option>
-          <option value="Russian">Russian — Русский</option>
-          <option value="Hindi">Hindi — हिन्दी</option>
-          <option value="Dutch">Dutch — Nederlands</option>
-          <option value="Swedish">Swedish — Svenska</option>
-          <option value="Turkish">Turkish — Türkçe</option>
-          <option value="Polish">Polish — Polski</option>
+          <option value="Hebrew">Hebrew</option>
+          <option value="Spanish">Spanish</option>
+          <option value="French">French</option>
+          <option value="German">German</option>
+          <option value="Italian">Italian</option>
+          <option value="Portuguese">Portuguese</option>
+          <option value="Japanese">Japanese</option>
+          <option value="Korean">Korean</option>
+          <option value="Mandarin Chinese">Mandarin Chinese</option>
+          <option value="Arabic">Arabic</option>
+          <option value="Russian">Russian</option>
+          <option value="Hindi">Hindi</option>
+          <option value="Dutch">Dutch</option>
+          <option value="Swedish">Swedish</option>
+          <option value="Turkish">Turkish</option>
+          <option value="Polish">Polish</option>
         </select>
+
+        <!-- Custom visual dropdown -->
+        <div class="lang-select-wrapper" id="langSelectWrapper">
+          <button type="button" class="lang-select-trigger" id="langSelectTrigger">
+            <img class="lang-flag" id="langSelectFlag" src="https://flagcdn.com/w40/us.png" alt="">
+            <span id="langSelectLabel">English</span>
+          </button>
+          <div class="lang-select-dropdown" id="langSelectDropdown"></div>
+        </div>
       </div>
 
       <button class="translate-btn" id="translateBtn" disabled>
@@ -610,10 +720,22 @@
     songs.forEach(song => {
       const el = document.createElement('div');
       el.className = 'ac-item';
+
+      const thumbHTML = song.thumbnail
+        ? `<img class="ac-thumb" src="${esc(song.thumbnail)}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+           <div class="ac-thumb-placeholder" style="display:none;">
+             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+               <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+             </svg>
+           </div>`
+        : `<div class="ac-thumb-placeholder">
+             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+               <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+             </svg>
+           </div>`;
+
       el.innerHTML = `
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-          <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-        </svg>
+        ${thumbHTML}
         <div class="ac-text">
           <div class="ac-title">${esc(song.title)}</div>
           <div class="ac-artist">${esc(song.artist)}</div>
@@ -732,6 +854,72 @@
     resultCard.classList.add('visible');
     resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+
+  // ── Custom Language Dropdown ───────────────────────────────────
+  const LANGUAGES = [
+    { value: 'English',          label: 'English',    native: 'English',    cc: 'us' },
+    { value: 'Hebrew',           label: 'Hebrew',     native: 'עברית',      cc: 'il' },
+    { value: 'Spanish',          label: 'Spanish',    native: 'Español',    cc: 'es' },
+    { value: 'French',           label: 'French',     native: 'Français',   cc: 'fr' },
+    { value: 'German',           label: 'German',     native: 'Deutsch',    cc: 'de' },
+    { value: 'Italian',          label: 'Italian',    native: 'Italiano',   cc: 'it' },
+    { value: 'Portuguese',       label: 'Portuguese', native: 'Português',  cc: 'pt' },
+    { value: 'Japanese',         label: 'Japanese',   native: '日本語',      cc: 'jp' },
+    { value: 'Korean',           label: 'Korean',     native: '한국어',      cc: 'kr' },
+    { value: 'Mandarin Chinese', label: 'Mandarin',   native: '普通话',      cc: 'cn' },
+    { value: 'Arabic',           label: 'Arabic',     native: 'العربية',    cc: 'sa' },
+    { value: 'Russian',          label: 'Russian',    native: 'Русский',    cc: 'ru' },
+    { value: 'Hindi',            label: 'Hindi',      native: 'हिन्दी',     cc: 'in' },
+    { value: 'Dutch',            label: 'Dutch',      native: 'Nederlands', cc: 'nl' },
+    { value: 'Swedish',          label: 'Swedish',    native: 'Svenska',    cc: 'se' },
+    { value: 'Turkish',          label: 'Turkish',    native: 'Türkçe',     cc: 'tr' },
+    { value: 'Polish',           label: 'Polish',     native: 'Polski',     cc: 'pl' },
+  ];
+
+  const langWrapper   = document.getElementById('langSelectWrapper');
+  const langTrigger   = document.getElementById('langSelectTrigger');
+  const langFlag      = document.getElementById('langSelectFlag');
+  const langLabel     = document.getElementById('langSelectLabel');
+  const langDropdownEl= document.getElementById('langSelectDropdown');
+  const targetLangEl  = document.getElementById('targetLang');
+
+  // Build dropdown options
+  LANGUAGES.forEach(lang => {
+    const opt = document.createElement('div');
+    opt.className = 'lang-option' + (lang.value === 'English' ? ' selected' : '');
+    opt.dataset.value = lang.value;
+    opt.innerHTML = `
+      <img class="lang-flag" src="https://flagcdn.com/w40/${lang.cc}.png" alt="${lang.cc}" loading="lazy">
+      <span>${lang.label}</span>
+      <span style="color:var(--ink-light);font-size:0.82rem;margin-left:4px;">${lang.native}</span>`;
+    opt.addEventListener('click', () => {
+      selectLang(lang);
+      langWrapper.classList.remove('open');
+    });
+    langDropdownEl.appendChild(opt);
+  });
+
+  function selectLang(lang) {
+    // Update trigger
+    langFlag.src = `https://flagcdn.com/w40/${lang.cc}.png`;
+    langFlag.alt = lang.cc;
+    langLabel.textContent = `${lang.label} — ${lang.native}`;
+    // Sync hidden select
+    targetLangEl.value = lang.value;
+    // Update selected state
+    langDropdownEl.querySelectorAll('.lang-option').forEach(el => {
+      el.classList.toggle('selected', el.dataset.value === lang.value);
+    });
+  }
+
+  langTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    langWrapper.classList.toggle('open');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!langWrapper.contains(e.target)) langWrapper.classList.remove('open');
+  });
 
   function esc(str) {
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
