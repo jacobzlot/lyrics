@@ -132,6 +132,18 @@ For blank lines between verses, use the same structure with all fields as empty 
     });
 
     const result = JSON.parse(completion.choices[0].message.content);
+
+    // Safety: GPT sometimes wraps the array under a different key
+    if (!result.lines || !Array.isArray(result.lines)) {
+      const key = Object.keys(result).find(k => Array.isArray(result[k]));
+      result.lines = key ? result[key] : [];
+    }
+
+    // Ensure sourceLanguage always exists
+    if (!result.sourceLanguage) {
+      result.sourceLanguage = 'Unknown';
+    }
+
     res.json(result);
   } catch (err) {
     console.error(err);
