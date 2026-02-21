@@ -39,11 +39,11 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
-// 2. FETCH LYRICS — Genius scrape with full browser headers, fallback to lrclib then lyrics.ovh
+// 2. FETCH LYRICS — Genius scrape with full browser headers, fallback to lrclib
 app.get('/api/lyrics', async (req, res) => {
   const { artist, title } = req.query;
 
-  // Try 1: Genius scrape
+  // First try Genius scrape
   try {
     const searchRes = await axios.get('https://api.genius.com/search', {
       params: { q: `${title} ${artist}` },
@@ -75,47 +75,51 @@ app.get('/api/lyrics', async (req, res) => {
 
     const $ = cheerio.load(pageRes.data);
     let lyrics = '';
+
     $('[data-lyrics-container="true"]').each((i, el) => {
       $(el).find('br').replaceWith('\n');
       lyrics += $(el).text() + '\n';
     });
 
     if (lyrics.trim()) {
-      return res.json({ lyrics: lyrics.trim(), source: 'Genius' });
+      return res.json({ lyrics: lyrics.trim() });
     }
 
+    // Genius returned page but no lyrics container — fall through to fallback
     throw new Error('No lyrics container found');
 
   } catch (geniusErr) {
     console.error('Genius scrape failed:', geniusErr.message);
-  }
 
-  // Try 2: lrclib.net
-  try {
-    const lrclibRes = await axios.get('https://lrclib.net/api/get', {
-      params: { artist_name: artist, track_name: title },
-      timeout: 8000
-    });
-    const lyrics = lrclibRes.data.plainLyrics || lrclibRes.data.syncedLyrics;
-    if (lyrics) return res.json({ lyrics, source: 'lrclib.net' });
-  } catch (lrclibErr) {
-    console.error('lrclib fallback failed:', lrclibErr.message);
-  }
+    // Fallback: lrclib.net
+    try {
+      const lrclibRes = await axios.get('https://lrclib.net/api/get', {
+        params: { artist_name: artist, track_name: title },
+        timeout: 8000
+      });
 
-  // Try 3: lyrics.ovh
-  try {
-    const ovhRes = await axios.get(
-      `https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(title)}`,
-      { timeout: 8000 }
-    );
-    if (ovhRes.data.lyrics) {
-      return res.json({ lyrics: ovhRes.data.lyrics, source: 'lyrics.ovh' });
+      const lyrics = lrclibRes.data.plainLyrics || lrclibRes.data.syncedLyrics;
+      if (lyrics) return res.json({ lyrics });
+
+      throw new Error('No lyrics in lrclib response');
+
+    } catch (lrclibErr) {
+      console.error('lrclib fallback failed:', lrclibErr.message);
+
+      // Final fallback: lyrics.ovh
+      try {
+        const ovhRes = await axios.get(
+          `https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(title)}`,
+          { timeout: 8000 }
+        );
+        if (ovhRes.data.lyrics) return res.json({ lyrics: ovhRes.data.lyrics });
+      } catch (ovhErr) {
+        console.error('lyrics.ovh fallback failed:', ovhErr.message);
+      }
+
+      res.status(404).json({ error: 'Lyrics not found. Try searching for the song with a slightly different title.' });
     }
-  } catch (ovhErr) {
-    console.error('lyrics.ovh fallback failed:', ovhErr.message);
   }
-
-  res.status(404).json({ error: 'Lyrics not found. Try searching with a slightly different title.' });
 });
 
 // 3. DETECT + TRANSLATE — single GPT call
@@ -157,6 +161,7 @@ For blank lines between verses, use: { "original": "", "translated": "" }`
 
     const result = JSON.parse(completion.choices[0].message.content);
 
+    // Safety: GPT sometimes wraps the array under a different key
     if (!result.lines || !Array.isArray(result.lines)) {
       const key = Object.keys(result).find(k => Array.isArray(result[k]));
       result.lines = key ? result[key] : [];
