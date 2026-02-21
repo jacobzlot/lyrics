@@ -12,7 +12,7 @@ app.use(express.static('public'));
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// 1. AUTOCOMPLETE — search Genius for songs
+// 1. AUTOCOMPLETE — search Genius for songs (includes album thumbnail)
 app.get('/api/search', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.json([]);
@@ -28,7 +28,8 @@ app.get('/api/search', async (req, res) => {
       title: hit.result.title,
       artist: hit.result.primary_artist.name,
       artistSlug: hit.result.primary_artist.name,
-      titleSlug: hit.result.title
+      titleSlug: hit.result.title,
+      thumbnail: hit.result.song_art_image_thumbnail_url || hit.result.header_image_thumbnail_url || null
     }));
 
     res.json(hits);
@@ -43,7 +44,6 @@ app.get('/api/lyrics', async (req, res) => {
   const { artist, title } = req.query;
 
   try {
-    // Step 1: Search Genius for the song URL
     const searchRes = await axios.get('https://api.genius.com/search', {
       params: { q: `${title} ${artist}` },
       headers: { Authorization: `Bearer ${process.env.GENIUS_TOKEN}` }
@@ -54,14 +54,12 @@ app.get('/api/lyrics', async (req, res) => {
 
     const songUrl = hit.result.url;
 
-    // Step 2: Fetch the Genius song page
     const pageRes = await axios.get(songUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       }
     });
 
-    // Step 3: Parse lyrics using cheerio
     const $ = cheerio.load(pageRes.data);
     let lyrics = '';
 
@@ -81,13 +79,33 @@ app.get('/api/lyrics', async (req, res) => {
   }
 });
 
-// 3. DETECT + TRANSLATE — single GPT call
+// 3. TRANSLATE (with optional transliteration)
 app.post('/api/translate', async (req, res) => {
-  const { lyrics, targetLanguage } = req.body;
+  const { lyrics, targetLanguage, transliterate } = req.body;
 
   if (!lyrics || !targetLanguage) {
     return res.status(400).json({ error: 'Missing lyrics or target language' });
   }
+
+  const transliterateInstruction = transliterate
+    ? `Also include a "transliterated" field for each line — this is the pronunciation of the ORIGINAL line written in Latin/Roman characters so an English speaker could read it aloud. If the original is already in Latin script, set "transliterated" to "".`
+    : '';
+
+  const jsonFormat = transliterate
+    ? `{
+  "sourceLanguage": "detected language name",
+  "lines": [
+    { "original": "original line", "transliterated": "romanized pronunciation", "translated": "translated line" },
+    ...
+  ]
+}`
+    : `{
+  "sourceLanguage": "detected language name",
+  "lines": [
+    { "original": "original line", "translated": "translated line" },
+    ...
+  ]
+}`;
 
   try {
     const completion = await openai.chat.completions.create({
@@ -95,19 +113,14 @@ app.post('/api/translate', async (req, res) => {
       messages: [
         {
           role: 'system',
-          content: `You are a professional song translator. 
+          content: `You are a professional song translator.
 Your task:
-1. First, detect the source language of the lyrics.
+1. Detect the source language of the lyrics.
 2. Translate each line into ${targetLanguage}, preserving the poetic feel and meaning.
+${transliterateInstruction}
 3. Return ONLY valid JSON in this exact format, nothing else:
-{
-  "sourceLanguage": "detected language name",
-  "lines": [
-    { "original": "original line", "translated": "translated line" },
-    ...
-  ]
-}
-For blank lines between verses, use: { "original": "", "translated": "" }`
+${jsonFormat}
+For blank lines between verses, use the same structure with all fields as empty strings "".`
         },
         {
           role: 'user',
