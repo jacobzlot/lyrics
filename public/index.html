@@ -1,986 +1,1170 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lyra — Song Lyrics Translator</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --ink: #1a1612;
-      --ink-mid: #5c5650;
-      --ink-light: #9c948c;
-      --rule: #e8e2da;
-      --surface: #faf8f5;
-      --white: #ffffff;
-      --accent: #c8472a;
-      --accent-hover: #a83820;
-      --accent-light: #fdf0ed;
-      --btn-secondary: #f2ede8;
-      --btn-secondary-hover: #e8e0d8;
-    }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--surface);
-      color: var(--ink);
-      min-height: 100vh;
-    }
-
-    /* ── Header ── */
-    header {
-      background: var(--white);
-      border-bottom: 1px solid var(--rule);
-      padding: 0 48px;
-      display: flex;
-      align-items: center;
-      height: 64px;
-      gap: 14px;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo svg { color: var(--accent); }
-
-    .logo-text {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      color: var(--ink);
-    }
-
-    .logo-tagline {
-      font-size: 0.75rem;
-      color: var(--ink-light);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border-left: 1px solid var(--rule);
-      padding-left: 14px;
-    }
-
-    /* ── Main ── */
-    main {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 56px 24px 80px;
-    }
-
-    .page-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.6rem;
-      font-weight: 400;
-      line-height: 1.15;
-      letter-spacing: -0.03em;
-      margin-bottom: 8px;
-    }
-
-    .page-title em { font-style: italic; color: var(--accent); }
-
-    .page-subtitle {
-      font-size: 0.9rem;
-      color: var(--ink-mid);
-      font-weight: 300;
-      margin-bottom: 48px;
-    }
-
-    /* ── Card ── */
-    .card {
-      background: var(--white);
-      border: 1px solid var(--rule);
-      border-radius: 2px;
-      padding: 36px 40px;
-      margin-bottom: 24px;
-    }
-
-    .card-label {
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* ── Search input ── */
-    .search-wrapper { position: relative; }
-
-    .search-input-row {
-      display: flex;
-      align-items: center;
-      border: 1.5px solid var(--rule);
-      border-radius: 2px;
-      background: var(--white);
-      transition: border-color 0.15s;
-    }
-
-    .search-input-row:focus-within { border-color: var(--ink); }
-
-    .search-icon {
-      padding: 0 14px;
-      color: var(--ink-light);
-      display: flex;
-      align-items: center;
-      flex-shrink: 0;
-    }
-
-    #searchInput {
-      flex: 1;
-      border: none;
-      outline: none;
-      padding: 14px 0;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.95rem;
-      color: var(--ink);
-      background: transparent;
-    }
-
-    #searchInput::placeholder { color: var(--ink-light); }
-
-    .clear-btn {
-      padding: 0 14px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--ink-light);
-      display: none;
-      align-items: center;
-    }
-
-    .clear-btn.visible { display: flex; }
-    .clear-btn:hover { color: var(--ink); }
-
-    /* ── Autocomplete dropdown ── */
-    .dropdown {
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0; right: 0;
-      background: var(--white);
-      border: 1.5px solid var(--ink);
-      border-radius: 2px;
-      z-index: 200;
-      display: none;
-      overflow: hidden;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
-    }
-
-    .dropdown.open { display: block; }
-
-    .ac-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 11px 16px;
-      cursor: pointer;
-      border-bottom: 1px solid var(--rule);
-      transition: background 0.1s;
-    }
-
-    .ac-item:last-child { border-bottom: none; }
-    .ac-item:hover { background: var(--surface); }
-
-    .ac-thumb {
-      width: 42px;
-      height: 42px;
-      border-radius: 2px;
-      object-fit: cover;
-      flex-shrink: 0;
-      background: var(--surface);
-      border: 1px solid var(--rule);
-    }
-
-    .ac-thumb-placeholder {
-      width: 42px;
-      height: 42px;
-      border-radius: 2px;
-      background: var(--surface);
-      border: 1px solid var(--rule);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--rule);
-    }
-
-    .ac-text { flex: 1; min-width: 0; }
-
-    .ac-title {
-      font-size: 0.88rem;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: var(--ink);
-    }
-
-    .ac-artist {
-      font-size: 0.76rem;
-      color: var(--ink-light);
-      margin-top: 2px;
-    }
-
-    /* ── Controls row ── */
-    .controls-row {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 14px;
-      align-items: end;
-      margin-top: 22px;
-    }
-
-    .field-group { display: flex; flex-direction: column; }
-
-    /* ── Custom language select ── */
-    .lang-select-wrapper { position: relative; }
-
-    .lang-select-trigger {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border: 1.5px solid var(--rule);
-      border-radius: 2px;
-      padding: 12px 14px;
-      cursor: pointer;
-      background: var(--white);
-      transition: border-color 0.15s;
-      user-select: none;
-    }
-
-    .lang-select-trigger:hover { border-color: var(--ink-light); }
-    .lang-select-trigger.open { border-color: var(--ink); }
-
-    .lang-flag {
-      width: 20px;
-      height: 15px;
-      object-fit: cover;
-      border-radius: 1px;
-      flex-shrink: 0;
-      border: 1px solid rgba(0,0,0,0.08);
-    }
-
-    .lang-flag-placeholder {
-      width: 20px;
-      height: 15px;
-      background: var(--rule);
-      border-radius: 1px;
-      flex-shrink: 0;
-    }
-
-    .lang-trigger-text {
-      flex: 1;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      color: var(--ink);
-    }
-
-    .lang-trigger-chevron {
-      color: var(--ink-light);
-      transition: transform 0.2s;
-      flex-shrink: 0;
-    }
-
-    .lang-select-trigger.open .lang-trigger-chevron {
-      transform: rotate(180deg);
-    }
-
-    .lang-dropdown {
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0; right: 0;
-      background: var(--white);
-      border: 1.5px solid var(--ink);
-      border-radius: 2px;
-      z-index: 300;
-      display: none;
-      overflow-y: auto;
-      max-height: 320px;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
-    }
-
-    .lang-dropdown.open { display: block; }
-
-    .lang-option {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 11px 14px;
-      cursor: pointer;
-      border-bottom: 1px solid var(--rule);
-      transition: background 0.1s;
-    }
-
-    .lang-option:last-child { border-bottom: none; }
-    .lang-option:hover { background: var(--surface); }
-    .lang-option.selected { background: var(--accent-light); }
-
-    .lang-option-name {
-      font-size: 0.875rem;
-      color: var(--ink);
-      flex: 1;
-    }
-
-    .lang-option-native {
-      font-size: 0.78rem;
-      color: var(--ink-light);
-    }
-
-    /* ── Buttons ── */
-    .translate-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 13px 22px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 2px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.855rem;
-      font-weight: 500;
-      letter-spacing: 0.03em;
-      cursor: pointer;
-      transition: background 0.15s, opacity 0.15s;
-      white-space: nowrap;
-      height: 47px;
-    }
-
-    .translate-btn:hover:not(:disabled) { background: var(--accent-hover); }
-    .translate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .transliterate-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 13px 18px;
-      background: var(--btn-secondary);
-      color: var(--ink);
-      border: 1.5px solid var(--rule);
-      border-radius: 2px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.855rem;
-      font-weight: 500;
-      letter-spacing: 0.03em;
-      cursor: pointer;
-      transition: background 0.15s, opacity 0.15s;
-      white-space: nowrap;
-      height: 47px;
-    }
-
-    .transliterate-btn:hover:not(:disabled) { background: var(--btn-secondary-hover); }
-    .transliterate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    /* ── Status / Error ── */
-    .status-bar {
-      display: none;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 18px;
-      background: var(--surface);
-      border: 1px solid var(--rule);
-      border-radius: 2px;
-      font-size: 0.85rem;
-      color: var(--ink-mid);
-      margin-top: 20px;
-    }
-
-    .status-bar.visible { display: flex; }
-
-    .spinner {
-      width: 16px; height: 16px;
-      border: 2px solid var(--rule);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      flex-shrink: 0;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .error-bar {
-      display: none;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 18px;
-      background: var(--accent-light);
-      border: 1px solid #f0c0b4;
-      border-radius: 2px;
-      font-size: 0.85rem;
-      color: var(--accent);
-      margin-top: 20px;
-    }
-
-    .error-bar.visible { display: flex; }
-
-    /* ── Result card ── */
-    .result-card {
-      display: none;
-      background: var(--white);
-      border: 1px solid var(--rule);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .result-card.visible { display: block; }
-
-    .result-header {
-      padding: 24px 40px;
-      border-bottom: 1px solid var(--rule);
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-
-    .result-header-left { display: flex; align-items: center; gap: 16px; }
-
-    .result-album-art {
-      width: 56px;
-      height: 56px;
-      border-radius: 2px;
-      object-fit: cover;
-      border: 1px solid var(--rule);
-      flex-shrink: 0;
-    }
-
-    .result-song-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.35rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-
-    .result-song-artist {
-      font-size: 0.83rem;
-      color: var(--ink-mid);
-      font-weight: 300;
-      margin-top: 3px;
-    }
-
-    .lang-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--ink-mid);
-      background: var(--surface);
-      border: 1px solid var(--rule);
-      padding: 6px 12px;
-      border-radius: 100px;
-      white-space: nowrap;
-    }
-
-    .badge-flag {
-      width: 16px;
-      height: 12px;
-      object-fit: cover;
-      border-radius: 1px;
-      border: 1px solid rgba(0,0,0,0.08);
-    }
-
-    /* Columns */
-    .col-header-row {
-      display: grid;
-      background: var(--surface);
-      border-bottom: 1px solid var(--rule);
-    }
-
-    .col-header-row.two-col { grid-template-columns: 1fr 1fr; }
-    .col-header-row.three-col { grid-template-columns: 1fr 1fr 1fr; }
-
-    .col-header {
-      padding: 10px 32px;
-      font-size: 0.67rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      border-right: 1px solid var(--rule);
-    }
-
-    .col-header:last-child { border-right: none; }
-
-    /* Lyric rows */
-    .lyric-row {
-      display: grid;
-      border-bottom: 1px solid var(--rule);
-      transition: background 0.1s;
-    }
-
-    .lyric-row.two-col { grid-template-columns: 1fr 1fr; }
-    .lyric-row.three-col { grid-template-columns: 1fr 1fr 1fr; }
-    .lyric-row:last-child { border-bottom: none; }
-    .lyric-row:hover { background: #fdfcfa; }
-
-    .lyric-cell {
-      padding: 12px 32px;
-      font-size: 0.875rem;
-      line-height: 1.7;
-      border-right: 1px solid var(--rule);
-    }
-
-    .lyric-cell:last-child { border-right: none; }
-    .lyric-cell.original { color: var(--ink-mid); }
-    .lyric-cell.transliterated { color: var(--ink-light); font-style: italic; font-size: 0.83rem; }
-    .lyric-cell.translated { color: var(--ink); }
-
-    .lyric-row.blank .lyric-cell { padding-top: 5px; padding-bottom: 5px; }
-
-    .lyric-cell[dir="rtl"] { text-align: right; }
-
-    /* ── Footer ── */
-    footer {
-      text-align: center;
-      padding: 36px 24px;
-      font-size: 0.75rem;
-      color: var(--ink-light);
-      border-top: 1px solid var(--rule);
-      margin-top: 40px;
-    }
-
-    @media (max-width: 640px) {
-      header { padding: 0 20px; }
-      .logo-tagline { display: none; }
-      main { padding: 32px 16px 60px; }
-      .page-title { font-size: 1.8rem; }
-      .card { padding: 24px 20px; }
-      .controls-row { grid-template-columns: 1fr; }
-      .translate-btn, .transliterate-btn { width: 100%; justify-content: center; }
-      .result-header { padding: 20px; }
-      .col-header, .lyric-cell { padding-left: 16px; padding-right: 16px; }
-      .lyric-row.three-col, .col-header-row.three-col { grid-template-columns: 1fr; }
-      .lyric-row.two-col, .col-header-row.two-col { grid-template-columns: 1fr; }
-      .lyric-cell { border-right: none; border-bottom: 1px solid var(--rule); }
-      .lyric-cell:last-child { border-bottom: none; }
-      .col-header { border-right: none; border-bottom: 1px solid var(--rule); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyra — Song Lyrics Translator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --ink: #1a1612;
+            --ink-mid: #5c5650;
+            --ink-light: #9c948c;
+            --rule: #e8e2da;
+            --surface: #faf8f5;
+            --white: #ffffff;
+            --accent: #c8472a;
+            --accent-hover: #a83820;
+            --accent-light: #fdf0ed;
+            --btn-secondary: #f2ede8;
+            --btn-secondary-hover: #e8e0d8;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            background: var(--white);
+            border-bottom: 1px solid var(--rule);
+            padding: 0 48px;
+            display: flex;
+            align-items: center;
+            height: 64px;
+            gap: 14px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo svg {
+            color: var(--accent);
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+        }
+
+        .logo-tagline {
+            font-size: 0.75rem;
+            color: var(--ink-light);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border-left: 1px solid var(--rule);
+            padding-left: 14px;
+        }
+
+        /* ── Main ── */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 56px 24px 80px;
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.6rem;
+            font-weight: 400;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 8px;
+        }
+
+        .page-title em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .page-subtitle {
+            font-size: 0.9rem;
+            color: var(--ink-mid);
+            font-weight: 300;
+            margin-bottom: 48px;
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--white);
+            border: 1px solid var(--rule);
+            border-radius: 2px;
+            padding: 36px 40px;
+            margin-bottom: 24px;
+        }
+
+        .card-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ink-light);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ── Search input ── */
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-input-row {
+            display: flex;
+            align-items: center;
+            border: 1.5px solid var(--rule);
+            border-radius: 2px;
+            background: var(--white);
+            transition: border-color 0.15s;
+        }
+
+        .search-input-row:focus-within {
+            border-color: var(--ink);
+        }
+
+        .search-icon {
+            padding: 0 14px;
+            color: var(--ink-light);
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        #searchInput {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 14px 0;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            color: var(--ink);
+            background: transparent;
+        }
+
+        #searchInput::placeholder {
+            color: var(--ink-light);
+        }
+
+        .clear-btn {
+            padding: 0 14px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--ink-light);
+            display: none;
+            align-items: center;
+        }
+
+        .clear-btn.visible {
+            display: flex;
+        }
+
+        .clear-btn:hover {
+            color: var(--ink);
+        }
+
+        /* ── Autocomplete dropdown ── */
+        .dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border: 1.5px solid var(--ink);
+            border-radius: 2px;
+            z-index: 200;
+            display: none;
+            overflow: hidden;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown.open {
+            display: block;
+        }
+
+        .ac-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 11px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--rule);
+            transition: background 0.1s;
+        }
+
+        .ac-item:last-child {
+            border-bottom: none;
+        }
+
+        .ac-item:hover {
+            background: var(--surface);
+        }
+
+        .ac-thumb {
+            width: 42px;
+            height: 42px;
+            border-radius: 2px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--surface);
+            border: 1px solid var(--rule);
+        }
+
+        .ac-thumb-placeholder {
+            width: 42px;
+            height: 42px;
+            border-radius: 2px;
+            background: var(--surface);
+            border: 1px solid var(--rule);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--rule);
+        }
+
+        .ac-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ac-title {
+            font-size: 0.88rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--ink);
+        }
+
+        .ac-artist {
+            font-size: 0.76rem;
+            color: var(--ink-light);
+            margin-top: 2px;
+        }
+
+        /* ── Controls row ── */
+        .controls-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 14px;
+            align-items: end;
+            margin-top: 22px;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Custom language select ── */
+        .lang-select-wrapper {
+            position: relative;
+        }
+
+        .lang-select-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1.5px solid var(--rule);
+            border-radius: 2px;
+            padding: 12px 14px;
+            cursor: pointer;
+            background: var(--white);
+            transition: border-color 0.15s;
+            user-select: none;
+        }
+
+        .lang-select-trigger:hover {
+            border-color: var(--ink-light);
+        }
+
+        .lang-select-trigger.open {
+            border-color: var(--ink);
+        }
+
+        .lang-flag {
+            width: 20px;
+            height: 20px;
+            border-radius: 999px;
+            object-fit: cover;
+        }
+
+        .lang-flag-placeholder {
+            width: 20px;
+            height: 15px;
+            background: var(--rule);
+            border-radius: 1px;
+            flex-shrink: 0;
+        }
+
+        .lang-trigger-text {
+            flex: 1;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            color: var(--ink);
+        }
+
+        .lang-trigger-chevron {
+            color: var(--ink-light);
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .lang-select-trigger.open .lang-trigger-chevron {
+            transform: rotate(180deg);
+        }
+
+        .lang-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border: 1.5px solid var(--ink);
+            border-radius: 2px;
+            z-index: 300;
+            display: none;
+            overflow-y: auto;
+            max-height: 320px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .lang-dropdown.open {
+            display: block;
+        }
+
+        .lang-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--rule);
+            transition: background 0.1s;
+        }
+
+        .lang-option:last-child {
+            border-bottom: none;
+        }
+
+        .lang-option:hover {
+            background: var(--surface);
+        }
+
+        .lang-option.selected {
+            background: var(--accent-light);
+        }
+
+        .lang-option-name {
+            font-size: 0.875rem;
+            color: var(--ink);
+            flex: 1;
+        }
+
+        .lang-option-native {
+            font-size: 0.78rem;
+            color: var(--ink-light);
+        }
+
+        /* ── Buttons ── */
+        .translate-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 22px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 2px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.855rem;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            transition: background 0.15s, opacity 0.15s;
+            white-space: nowrap;
+            height: 47px;
+        }
+
+        .translate-btn:hover:not(:disabled) {
+            background: var(--accent-hover);
+        }
+
+        .translate-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .transliterate-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 18px;
+            background: var(--btn-secondary);
+            color: var(--ink);
+            border: 1.5px solid var(--rule);
+            border-radius: 2px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.855rem;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            transition: background 0.15s, opacity 0.15s;
+            white-space: nowrap;
+            height: 47px;
+        }
+
+        .transliterate-btn:hover:not(:disabled) {
+            background: var(--btn-secondary-hover);
+        }
+
+        .transliterate-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ── Status / Error ── */
+        .status-bar {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            background: var(--surface);
+            border: 1px solid var(--rule);
+            border-radius: 2px;
+            font-size: 0.85rem;
+            color: var(--ink-mid);
+            margin-top: 20px;
+        }
+
+        .status-bar.visible {
+            display: flex;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--rule);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error-bar {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            background: var(--accent-light);
+            border: 1px solid #f0c0b4;
+            border-radius: 2px;
+            font-size: 0.85rem;
+            color: var(--accent);
+            margin-top: 20px;
+        }
+
+        .error-bar.visible {
+            display: flex;
+        }
+
+        /* ── Result card ── */
+        .result-card {
+            display: none;
+            background: var(--white);
+            border: 1px solid var(--rule);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .result-card.visible {
+            display: block;
+        }
+
+        .result-header {
+            padding: 24px 40px;
+            border-bottom: 1px solid var(--rule);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .result-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .result-album-art {
+            width: 56px;
+            height: 56px;
+            border-radius: 2px;
+            object-fit: cover;
+            border: 1px solid var(--rule);
+            flex-shrink: 0;
+        }
+
+        .result-song-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .result-song-artist {
+            font-size: 0.83rem;
+            color: var(--ink-mid);
+            font-weight: 300;
+            margin-top: 3px;
+        }
+
+        .lang-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-mid);
+            background: var(--surface);
+            border: 1px solid var(--rule);
+            padding: 6px 12px;
+            border-radius: 100px;
+            white-space: nowrap;
+        }
+
+        .badge-flag {
+            width: 16px;
+            height: 12px;
+            object-fit: cover;
+            border-radius: 1px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        /* Columns */
+        .col-header-row {
+            display: grid;
+            background: var(--surface);
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .col-header-row.two-col {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .col-header-row.three-col {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .col-header {
+            padding: 10px 32px;
+            font-size: 0.67rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ink-light);
+            border-right: 1px solid var(--rule);
+        }
+
+        .col-header:last-child {
+            border-right: none;
+        }
+
+        /* Lyric rows */
+        .lyric-row {
+            display: grid;
+            border-bottom: 1px solid var(--rule);
+            transition: background 0.1s;
+        }
+
+        .lyric-row.two-col {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .lyric-row.three-col {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .lyric-row:last-child {
+            border-bottom: none;
+        }
+
+        .lyric-row:hover {
+            background: #fdfcfa;
+        }
+
+        .lyric-cell {
+            padding: 12px 32px;
+            font-size: 0.875rem;
+            line-height: 1.7;
+            border-right: 1px solid var(--rule);
+        }
+
+        .lyric-cell:last-child {
+            border-right: none;
+        }
+
+        .lyric-cell.original {
+            color: var(--ink-mid);
+        }
+
+        .lyric-cell.transliterated {
+            color: var(--ink-light);
+            font-style: italic;
+            font-size: 0.83rem;
+        }
+
+        .lyric-cell.translated {
+            color: var(--ink);
+        }
+
+        .lyric-row.blank .lyric-cell {
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        .lyric-cell[dir="rtl"] {
+            text-align: right;
+        }
+
+        /* ── Footer ── */
+        footer {
+            text-align: center;
+            padding: 36px 24px;
+            font-size: 0.75rem;
+            color: var(--ink-light);
+            border-top: 1px solid var(--rule);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 640px) {
+            header {
+                padding: 0 20px;
+            }
+
+            .logo-tagline {
+                display: none;
+            }
+
+            main {
+                padding: 32px 16px 60px;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .card {
+                padding: 24px 20px;
+            }
+
+            .controls-row {
+                grid-template-columns: 1fr;
+            }
+
+            .translate-btn,
+            .transliterate-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .result-header {
+                padding: 20px;
+            }
+
+            .col-header,
+            .lyric-cell {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .lyric-row.three-col,
+            .col-header-row.three-col {
+                grid-template-columns: 1fr;
+            }
+
+            .lyric-row.two-col,
+            .col-header-row.two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .lyric-cell {
+                border-right: none;
+                border-bottom: 1px solid var(--rule);
+            }
+
+            .lyric-cell:last-child {
+                border-bottom: none;
+            }
+
+            .col-header {
+                border-right: none;
+                border-bottom: 1px solid var(--rule);
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<header>
-  <div class="logo">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 18V5l12-2v13"/>
-      <circle cx="6" cy="18" r="3"/>
-      <circle cx="18" cy="16" r="3"/>
-    </svg>
-    <span class="logo-text">Lyra</span>
-    <span class="logo-tagline">Lyrics Translator</span>
-  </div>
-</header>
-
-<main>
-  <h1 class="page-title">Translate any song,<br><em>line by line.</em></h1>
-  <p class="page-subtitle">Search for a song, choose your language, and read along.</p>
-
-  <div class="card">
-    <!-- Search -->
-    <div class="card-label">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-      </svg>
-      Find a Song
-    </div>
-
-    <div class="search-wrapper">
-      <div class="search-input-row">
-        <span class="search-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-          </svg>
-        </span>
-        <input type="text" id="searchInput" placeholder="Artist, song title, or both…" autocomplete="off" spellcheck="false">
-        <button class="clear-btn" id="clearBtn" type="button">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <path d="M18 6L6 18M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-      <div class="dropdown" id="dropdown"></div>
-    </div>
-
-    <!-- Language select + buttons -->
-    <div class="controls-row">
-      <div class="field-group">
-        <div class="card-label" style="margin-bottom:8px;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/>
-          </svg>
-          Translate To
-        </div>
-        <div class="lang-select-wrapper">
-          <div class="lang-select-trigger" id="langTrigger">
-            <img class="lang-flag" id="triggerFlag" src="" alt="">
-            <span class="lang-trigger-text" id="triggerText">English</span>
-            <svg class="lang-trigger-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-              <path d="M6 9l6 6 6-6"/>
+    <header>
+        <div class="logo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18V5l12-2v13" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
             </svg>
-          </div>
-          <div class="lang-dropdown" id="langDropdown"></div>
+            <span class="logo-text">Lyra</span>
+            <span class="logo-tagline">Lyrics Translator</span>
         </div>
-      </div>
+    </header>
 
-      <div style="padding-top:22px;">
-        <button class="translate-btn" id="translateBtn" disabled>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-          Translate
-        </button>
-      </div>
+    <main>
+        <h1 class="page-title">Translate any song,<br><em>line by line.</em></h1>
+        <p class="page-subtitle">Search for a song, choose your language, and read along.</p>
 
-      <div style="padding-top:22px;">
-        <button class="transliterate-btn" id="transliterateBtn" disabled>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/>
-          </svg>
-          + Transliterate
-        </button>
-      </div>
-    </div>
-  </div>
+        <div class="card">
+            <!-- Search -->
+            <div class="card-label">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="M21 21l-4.35-4.35" />
+                </svg>
+                Find a Song
+            </div>
 
-  <!-- Status -->
-  <div class="status-bar" id="statusBar">
-    <div class="spinner"></div>
-    <span id="statusText">Fetching lyrics and translating…</span>
-  </div>
+            <div class="search-wrapper">
+                <div class="search-input-row">
+                    <span class="search-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="M21 21l-4.35-4.35" />
+                        </svg>
+                    </span>
+                    <input type="text" id="searchInput" placeholder="Artist, song title, or both…" autocomplete="off"
+                        spellcheck="false">
+                    <button class="clear-btn" id="clearBtn" type="button">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="dropdown" id="dropdown"></div>
+            </div>
 
-  <!-- Error -->
-  <div class="error-bar" id="errorBar">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-      <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
-    </svg>
-    <span id="errorText"></span>
-  </div>
+            <!-- Language select + buttons -->
+            <div class="controls-row">
+                <div class="field-group">
+                    <div class="card-label" style="margin-bottom:8px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" />
+                        </svg>
+                        Translate To
+                    </div>
+                    <div class="lang-select-wrapper">
+                        <div class="lang-select-trigger" id="langTrigger">
+                            <img class="lang-flag" id="triggerFlag" src="" alt="">
+                            <span class="lang-trigger-text" id="triggerText">English</span>
+                            <svg class="lang-trigger-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                <path d="M6 9l6 6 6-6" />
+                            </svg>
+                        </div>
+                        <div class="lang-dropdown" id="langDropdown"></div>
+                    </div>
+                </div>
 
-  <!-- Result -->
-  <div class="result-card" id="resultCard">
-    <div class="result-header">
-      <div class="result-header-left">
-        <img class="result-album-art" id="resultArt" src="" alt="" style="display:none">
-        <div>
-          <div class="result-song-title" id="resultTitle"></div>
-          <div class="result-song-artist" id="resultArtist"></div>
+                <div style="padding-top:22px;">
+                    <button class="translate-btn" id="translateBtn" disabled>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                        Translate
+                    </button>
+                </div>
+
+                <div style="padding-top:22px;">
+                    <button class="transliterate-btn" id="transliterateBtn" disabled>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 7V4h16v3" />
+                            <path d="M9 20h6" />
+                            <path d="M12 4v16" />
+                        </svg>
+                        + Transliterate
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="lang-badge" id="langBadge">
-        <img class="badge-flag" id="badgeFlag" src="" alt="">
-        <span id="langBadgeText"></span>
-      </div>
-    </div>
-    <div class="col-header-row" id="colHeaderRow">
-      <div class="col-header" id="colOriginal">Original</div>
-      <div class="col-header" id="colTransliterated" style="display:none">Pronunciation</div>
-      <div class="col-header" id="colTranslated">Translation</div>
-    </div>
-    <div id="lyricsRows"></div>
-  </div>
-</main>
 
-<footer>
-  Lyrics sourced via Genius &nbsp;·&nbsp; Translation powered by OpenAI
-</footer>
+        <!-- Status -->
+        <div class="status-bar" id="statusBar">
+            <div class="spinner"></div>
+            <span id="statusText">Fetching lyrics and translating…</span>
+        </div>
 
-<script>
-  // ── Language data ──────────────────────────────────────────────
-  const LANGUAGES = [
-    { value: 'English',          label: 'English',          native: 'English',    flag: 'gb' },
-    { value: 'Hebrew',           label: 'Hebrew',           native: 'עברית',      flag: 'il' },
-    { value: 'Spanish',          label: 'Spanish',          native: 'Español',    flag: 'es' },
-    { value: 'French',           label: 'French',           native: 'Français',   flag: 'fr' },
-    { value: 'German',           label: 'German',           native: 'Deutsch',    flag: 'de' },
-    { value: 'Italian',          label: 'Italian',          native: 'Italiano',   flag: 'it' },
-    { value: 'Portuguese',       label: 'Portuguese',       native: 'Português',  flag: 'pt' },
-    { value: 'Japanese',         label: 'Japanese',         native: '日本語',      flag: 'jp' },
-    { value: 'Korean',           label: 'Korean',           native: '한국어',      flag: 'kr' },
-    { value: 'Mandarin Chinese', label: 'Mandarin',         native: '普通话',      flag: 'cn' },
-    { value: 'Arabic',           label: 'Arabic',           native: 'العربية',    flag: 'sa' },
-    { value: 'Russian',          label: 'Russian',          native: 'Русский',    flag: 'ru' },
-    { value: 'Hindi',            label: 'Hindi',            native: 'हिन्दी',      flag: 'in' },
-    { value: 'Dutch',            label: 'Dutch',            native: 'Nederlands', flag: 'nl' },
-    { value: 'Swedish',          label: 'Swedish',          native: 'Svenska',    flag: 'se' },
-    { value: 'Turkish',          label: 'Turkish',          native: 'Türkçe',     flag: 'tr' },
-    { value: 'Polish',           label: 'Polish',           native: 'Polski',     flag: 'pl' },
-    { value: 'Greek',            label: 'Greek',            native: 'Ελληνικά',   flag: 'gr' },
-    { value: 'Ukrainian',        label: 'Ukrainian',        native: 'Українська', flag: 'ua' },
-  ];
+        <!-- Error -->
+        <div class="error-bar" id="errorBar">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4M12 16h.01" />
+            </svg>
+            <span id="errorText"></span>
+        </div>
 
-  const RTL_LANGS = new Set(['Hebrew', 'Arabic']);
+        <!-- Result -->
+        <div class="result-card" id="resultCard">
+            <div class="result-header">
+                <div class="result-header-left">
+                    <img class="result-album-art" id="resultArt" src="" alt="" style="display:none">
+                    <div>
+                        <div class="result-song-title" id="resultTitle"></div>
+                        <div class="result-song-artist" id="resultArtist"></div>
+                    </div>
+                </div>
+                <div class="lang-badge" id="langBadge">
+                    <img class="badge-flag" id="badgeFlag" src="" alt="">
+                    <span id="langBadgeText"></span>
+                </div>
+            </div>
+            <div class="col-header-row" id="colHeaderRow">
+                <div class="col-header" id="colOriginal">Original</div>
+                <div class="col-header" id="colTransliterated" style="display:none">Pronunciation</div>
+                <div class="col-header" id="colTranslated">Translation</div>
+            </div>
+            <div id="lyricsRows"></div>
+        </div>
+    </main>
 
-  function flagUrl(code) {
-    return `https://flagcdn.com/w80/${code}.png`;
-  }
+    <footer>
+        Lyrics sourced via Genius &nbsp;·&nbsp; Translation powered by OpenAI
+    </footer>
 
-  // ── State ──────────────────────────────────────────────────────
-  let selectedSong    = null;
-  let selectedLang    = LANGUAGES[0];
-  let searchTimer     = null;
+    <script>
+        // ── Language data ──────────────────────────────────────────────
+        const LANGUAGES = [
+            { value: 'English', label: 'English', native: 'English', flag: 'gb' },
+            { value: 'Hebrew', label: 'Hebrew', native: 'עברית', flag: 'il' },
+            { value: 'Spanish', label: 'Spanish', native: 'Español', flag: 'es' },
+            { value: 'French', label: 'French', native: 'Français', flag: 'fr' },
+            { value: 'German', label: 'German', native: 'Deutsch', flag: 'de' },
+            { value: 'Italian', label: 'Italian', native: 'Italiano', flag: 'it' },
+            { value: 'Portuguese', label: 'Portuguese', native: 'Português', flag: 'pt' },
+            { value: 'Japanese', label: 'Japanese', native: '日本語', flag: 'jp' },
+            { value: 'Korean', label: 'Korean', native: '한국어', flag: 'kr' },
+            { value: 'Mandarin Chinese', label: 'Mandarin', native: '普通话', flag: 'cn' },
+            { value: 'Arabic', label: 'Arabic', native: 'العربية', flag: 'sa' },
+            { value: 'Russian', label: 'Russian', native: 'Русский', flag: 'ru' },
+            { value: 'Hindi', label: 'Hindi', native: 'हिन्दी', flag: 'in' },
+            { value: 'Dutch', label: 'Dutch', native: 'Nederlands', flag: 'nl' },
+            { value: 'Swedish', label: 'Swedish', native: 'Svenska', flag: 'se' },
+            { value: 'Turkish', label: 'Turkish', native: 'Türkçe', flag: 'tr' },
+            { value: 'Polish', label: 'Polish', native: 'Polski', flag: 'pl' },
+            { value: 'Greek', label: 'Greek', native: 'Ελληνικά', flag: 'gr' },
+            { value: 'Ukrainian', label: 'Ukrainian', native: 'Українська', flag: 'ua' },
+        ];
 
-  // ── Element refs ───────────────────────────────────────────────
-  const searchInput      = document.getElementById('searchInput');
-  const clearBtn         = document.getElementById('clearBtn');
-  const dropdown         = document.getElementById('dropdown');
-  const langTrigger      = document.getElementById('langTrigger');
-  const triggerFlag      = document.getElementById('triggerFlag');
-  const triggerText      = document.getElementById('triggerText');
-  const langDropdown     = document.getElementById('langDropdown');
-  const translateBtn     = document.getElementById('translateBtn');
-  const transliterateBtn = document.getElementById('transliterateBtn');
-  const statusBar        = document.getElementById('statusBar');
-  const statusText       = document.getElementById('statusText');
-  const errorBar         = document.getElementById('errorBar');
-  const errorTextEl      = document.getElementById('errorText');
-  const resultCard       = document.getElementById('resultCard');
-  const lyricsRows       = document.getElementById('lyricsRows');
-  const colHeaderRow     = document.getElementById('colHeaderRow');
+        const RTL_LANGS = new Set(['Hebrew', 'Arabic']);
 
-  // ── Build language dropdown ────────────────────────────────────
-  function buildLangDropdown() {
-    langDropdown.innerHTML = '';
-    LANGUAGES.forEach(lang => {
-      const el = document.createElement('div');
-      el.className = 'lang-option' + (lang.value === selectedLang.value ? ' selected' : '');
-      el.innerHTML = `
+        function flagUrl(code) {
+            return `https://flagcdn.com/w80/${code}.png`;
+        }
+
+        // ── State ──────────────────────────────────────────────────────
+        let selectedSong = null;
+        let selectedLang = LANGUAGES[0];
+        let searchTimer = null;
+
+        // ── Element refs ───────────────────────────────────────────────
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearBtn');
+        const dropdown = document.getElementById('dropdown');
+        const langTrigger = document.getElementById('langTrigger');
+        const triggerFlag = document.getElementById('triggerFlag');
+        const triggerText = document.getElementById('triggerText');
+        const langDropdown = document.getElementById('langDropdown');
+        const translateBtn = document.getElementById('translateBtn');
+        const transliterateBtn = document.getElementById('transliterateBtn');
+        const statusBar = document.getElementById('statusBar');
+        const statusText = document.getElementById('statusText');
+        const errorBar = document.getElementById('errorBar');
+        const errorTextEl = document.getElementById('errorText');
+        const resultCard = document.getElementById('resultCard');
+        const lyricsRows = document.getElementById('lyricsRows');
+        const colHeaderRow = document.getElementById('colHeaderRow');
+
+        // ── Build language dropdown ────────────────────────────────────
+        function buildLangDropdown() {
+            langDropdown.innerHTML = '';
+            LANGUAGES.forEach(lang => {
+                const el = document.createElement('div');
+                el.className = 'lang-option' + (lang.value === selectedLang.value ? ' selected' : '');
+                el.innerHTML = `
         <img class="lang-flag" src="${flagUrl(lang.flag)}" alt="${lang.label}" onerror="this.style.display='none'">
         <span class="lang-option-name">${lang.label}</span>
         <span class="lang-option-native">${lang.native}</span>`;
-      el.addEventListener('click', () => {
-        selectedLang = lang;
+                el.addEventListener('click', () => {
+                    selectedLang = lang;
+                    updateTrigger();
+                    closeLangDropdown();
+                });
+                langDropdown.appendChild(el);
+            });
+        }
+
+        function updateTrigger() {
+            triggerFlag.src = flagUrl(selectedLang.flag);
+            triggerFlag.alt = selectedLang.label;
+            triggerText.textContent = selectedLang.label;
+            buildLangDropdown();
+        }
+
+        langTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = langDropdown.classList.contains('open');
+            if (isOpen) closeLangDropdown();
+            else {
+                langDropdown.classList.add('open');
+                langTrigger.classList.add('open');
+            }
+        });
+
+        function closeLangDropdown() {
+            langDropdown.classList.remove('open');
+            langTrigger.classList.remove('open');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.lang-select-wrapper')) closeLangDropdown();
+            if (!e.target.closest('.search-wrapper')) closeSearchDropdown();
+        });
+
+        // Init
         updateTrigger();
-        closeLangDropdown();
-      });
-      langDropdown.appendChild(el);
-    });
-  }
 
-  function updateTrigger() {
-    triggerFlag.src = flagUrl(selectedLang.flag);
-    triggerFlag.alt = selectedLang.label;
-    triggerText.textContent = selectedLang.label;
-    buildLangDropdown();
-  }
+        // ── Search / Autocomplete ──────────────────────────────────────
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim();
+            clearBtn.classList.toggle('visible', q.length > 0);
+            if (q.length < 2) { closeSearchDropdown(); return; }
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => fetchSuggestions(q), 280);
+        });
 
-  langTrigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = langDropdown.classList.contains('open');
-    if (isOpen) closeLangDropdown();
-    else {
-      langDropdown.classList.add('open');
-      langTrigger.classList.add('open');
-    }
-  });
+        async function fetchSuggestions(q) {
+            try {
+                const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+                const songs = await res.json();
+                renderSearchDropdown(songs);
+            } catch { closeSearchDropdown(); }
+        }
 
-  function closeLangDropdown() {
-    langDropdown.classList.remove('open');
-    langTrigger.classList.remove('open');
-  }
+        function renderSearchDropdown(songs) {
+            dropdown.innerHTML = '';
+            if (!songs.length) { closeSearchDropdown(); return; }
 
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.lang-select-wrapper')) closeLangDropdown();
-    if (!e.target.closest('.search-wrapper')) closeSearchDropdown();
-  });
+            songs.forEach(song => {
+                const el = document.createElement('div');
+                el.className = 'ac-item';
 
-  // Init
-  updateTrigger();
-
-  // ── Search / Autocomplete ──────────────────────────────────────
-  searchInput.addEventListener('input', () => {
-    const q = searchInput.value.trim();
-    clearBtn.classList.toggle('visible', q.length > 0);
-    if (q.length < 2) { closeSearchDropdown(); return; }
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => fetchSuggestions(q), 280);
-  });
-
-  async function fetchSuggestions(q) {
-    try {
-      const res   = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-      const songs = await res.json();
-      renderSearchDropdown(songs);
-    } catch { closeSearchDropdown(); }
-  }
-
-  function renderSearchDropdown(songs) {
-    dropdown.innerHTML = '';
-    if (!songs.length) { closeSearchDropdown(); return; }
-
-    songs.forEach(song => {
-      const el = document.createElement('div');
-      el.className = 'ac-item';
-
-      const thumbHtml = song.thumbnail
-        ? `<img class="ac-thumb" src="${esc(song.thumbnail)}" alt="" onerror="this.style.display='none'">`
-        : `<div class="ac-thumb-placeholder">
+                const thumbHtml = song.thumbnail
+                    ? `<img class="ac-thumb" src="${esc(song.thumbnail)}" alt="" onerror="this.style.display='none'">`
+                    : `<div class="ac-thumb-placeholder">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
               <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
             </svg>
            </div>`;
 
-      el.innerHTML = `
+                el.innerHTML = `
         ${thumbHtml}
         <div class="ac-text">
           <div class="ac-title">${esc(song.title)}</div>
           <div class="ac-artist">${esc(song.artist)}</div>
         </div>`;
-      el.addEventListener('click', () => selectSong(song));
-      dropdown.appendChild(el);
-    });
+                el.addEventListener('click', () => selectSong(song));
+                dropdown.appendChild(el);
+            });
 
-    dropdown.classList.add('open');
-  }
+            dropdown.classList.add('open');
+        }
 
-  function selectSong(song) {
-    selectedSong = song;
-    searchInput.value = `${song.title} — ${song.artist}`;
-    clearBtn.classList.add('visible');
-    closeSearchDropdown();
-    translateBtn.disabled = false;
-    transliterateBtn.disabled = false;
-  }
+        function selectSong(song) {
+            selectedSong = song;
+            searchInput.value = `${song.title} — ${song.artist}`;
+            clearBtn.classList.add('visible');
+            closeSearchDropdown();
+            translateBtn.disabled = false;
+            transliterateBtn.disabled = false;
+        }
 
-  clearBtn.addEventListener('click', () => {
-    searchInput.value = '';
-    clearBtn.classList.remove('visible');
-    selectedSong = null;
-    translateBtn.disabled = true;
-    transliterateBtn.disabled = true;
-    closeSearchDropdown();
-    searchInput.focus();
-  });
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            clearBtn.classList.remove('visible');
+            selectedSong = null;
+            translateBtn.disabled = true;
+            transliterateBtn.disabled = true;
+            closeSearchDropdown();
+            searchInput.focus();
+        });
 
-  function closeSearchDropdown() {
-    dropdown.classList.remove('open');
-    dropdown.innerHTML = '';
-  }
+        function closeSearchDropdown() {
+            dropdown.classList.remove('open');
+            dropdown.innerHTML = '';
+        }
 
-  // ── Translate / Transliterate ──────────────────────────────────
-  translateBtn.addEventListener('click', () => runTranslation(false));
-  transliterateBtn.addEventListener('click', () => runTranslation(true));
+        // ── Translate / Transliterate ──────────────────────────────────
+        translateBtn.addEventListener('click', () => runTranslation(false));
+        transliterateBtn.addEventListener('click', () => runTranslation(true));
 
-  async function runTranslation(withTranslit) {
-    if (!selectedSong) return;
+        async function runTranslation(withTranslit) {
+            if (!selectedSong) return;
 
-    translateBtn.disabled = true;
-    transliterateBtn.disabled = true;
-    statusText.textContent = withTranslit
-      ? 'Fetching lyrics, translating and transliterating…'
-      : 'Fetching lyrics and translating…';
-    statusBar.classList.add('visible');
-    errorBar.classList.remove('visible');
-    resultCard.classList.remove('visible');
+            translateBtn.disabled = true;
+            transliterateBtn.disabled = true;
+            statusText.textContent = withTranslit
+                ? 'Fetching lyrics, translating and transliterating…'
+                : 'Fetching lyrics and translating…';
+            statusBar.classList.add('visible');
+            errorBar.classList.remove('visible');
+            resultCard.classList.remove('visible');
 
-    try {
-      const lr = await fetch(
-        `/api/lyrics?artist=${encodeURIComponent(selectedSong.artistSlug)}&title=${encodeURIComponent(selectedSong.titleSlug)}`
-      );
-      const ld = await lr.json();
-      if (ld.error) throw new Error(ld.error);
+            try {
+                const lr = await fetch(
+                    `/api/lyrics?artist=${encodeURIComponent(selectedSong.artistSlug)}&title=${encodeURIComponent(selectedSong.titleSlug)}`
+                );
+                const ld = await lr.json();
+                if (ld.error) throw new Error(ld.error);
 
-      const tr = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          lyrics: ld.lyrics,
-          targetLanguage: selectedLang.value,
-          transliterate: withTranslit
-        })
-      });
-      const td = await tr.json();
-      if (td.error) throw new Error(td.error);
+                const tr = await fetch('/api/translate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        lyrics: ld.lyrics,
+                        targetLanguage: selectedLang.value,
+                        transliterate: withTranslit
+                    })
+                });
+                const td = await tr.json();
+                if (td.error) throw new Error(td.error);
 
-      renderResult(td, withTranslit);
-    } catch (err) {
-      errorTextEl.textContent = err.message;
-      errorBar.classList.add('visible');
-    } finally {
-      statusBar.classList.remove('visible');
-      translateBtn.disabled = false;
-      transliterateBtn.disabled = false;
-    }
-  }
+                renderResult(td, withTranslit);
+            } catch (err) {
+                errorTextEl.textContent = err.message;
+                errorBar.classList.add('visible');
+            } finally {
+                statusBar.classList.remove('visible');
+                translateBtn.disabled = false;
+                transliterateBtn.disabled = false;
+            }
+        }
 
-  function renderResult(data, withTranslit) {
-    const isTargetRTL = RTL_LANGS.has(selectedLang.value);
-    const isSourceRTL = RTL_LANGS.has(data.sourceLanguage);
-    const colCount    = withTranslit ? 'three-col' : 'two-col';
+        function renderResult(data, withTranslit) {
+            const isTargetRTL = RTL_LANGS.has(selectedLang.value);
+            const isSourceRTL = RTL_LANGS.has(data.sourceLanguage);
+            const colCount = withTranslit ? 'three-col' : 'two-col';
 
-    // Header
-    document.getElementById('resultTitle').textContent  = selectedSong.title;
-    document.getElementById('resultArtist').textContent = selectedSong.artist;
+            // Header
+            document.getElementById('resultTitle').textContent = selectedSong.title;
+            document.getElementById('resultArtist').textContent = selectedSong.artist;
 
-    const resultArt = document.getElementById('resultArt');
-    if (selectedSong.thumbnail) {
-      resultArt.src = selectedSong.thumbnail;
-      resultArt.style.display = 'block';
-    } else {
-      resultArt.style.display = 'none';
-    }
+            const resultArt = document.getElementById('resultArt');
+            if (selectedSong.thumbnail) {
+                resultArt.src = selectedSong.thumbnail;
+                resultArt.style.display = 'block';
+            } else {
+                resultArt.style.display = 'none';
+            }
 
-    const badgeFlag = document.getElementById('badgeFlag');
-    badgeFlag.src = flagUrl(selectedLang.flag);
-    badgeFlag.alt = selectedLang.label;
-    document.getElementById('langBadgeText').textContent =
-      `${data.sourceLanguage} → ${selectedLang.label}`;
+            const badgeFlag = document.getElementById('badgeFlag');
+            badgeFlag.src = flagUrl(selectedLang.flag);
+            badgeFlag.alt = selectedLang.label;
+            document.getElementById('langBadgeText').textContent =
+                `${data.sourceLanguage} → ${selectedLang.label}`;
 
-    // Column headers
-    colHeaderRow.className = `col-header-row ${colCount}`;
-    document.getElementById('colOriginal').textContent    = data.sourceLanguage;
-    document.getElementById('colTranslated').textContent  = selectedLang.label;
-    const colTranslit = document.getElementById('colTransliterated');
-    colTranslit.style.display = withTranslit ? '' : 'none';
-    if (withTranslit) colTranslit.textContent = 'Pronunciation';
+            // Column headers
+            colHeaderRow.className = `col-header-row ${colCount}`;
+            document.getElementById('colOriginal').textContent = data.sourceLanguage;
+            document.getElementById('colTranslated').textContent = selectedLang.label;
+            const colTranslit = document.getElementById('colTransliterated');
+            colTranslit.style.display = withTranslit ? '' : 'none';
+            if (withTranslit) colTranslit.textContent = 'Pronunciation';
 
-    // Lyrics
-    lyricsRows.innerHTML = '';
+            // Lyrics
+            lyricsRows.innerHTML = '';
 
-    data.lines.forEach(line => {
-      const row = document.createElement('div');
-      const isEmpty = !line.original && !line.translated;
-      row.className = `lyric-row ${colCount}${isEmpty ? ' blank' : ''}`;
+            data.lines.forEach(line => {
+                const row = document.createElement('div');
+                const isEmpty = !line.original && !line.translated;
+                row.className = `lyric-row ${colCount}${isEmpty ? ' blank' : ''}`;
 
-      const origCell = document.createElement('div');
-      origCell.className = 'lyric-cell original';
-      origCell.textContent = line.original || '';
-      if (isSourceRTL) origCell.setAttribute('dir', 'rtl');
-      row.appendChild(origCell);
+                const origCell = document.createElement('div');
+                origCell.className = 'lyric-cell original';
+                origCell.textContent = line.original || '';
+                if (isSourceRTL) origCell.setAttribute('dir', 'rtl');
+                row.appendChild(origCell);
 
-      if (withTranslit) {
-        const translit = document.createElement('div');
-        translit.className = 'lyric-cell transliterated';
-        translit.textContent = line.transliterated || '';
-        row.appendChild(translit);
-      }
+                if (withTranslit) {
+                    const translit = document.createElement('div');
+                    translit.className = 'lyric-cell transliterated';
+                    translit.textContent = line.transliterated || '';
+                    row.appendChild(translit);
+                }
 
-      const transCell = document.createElement('div');
-      transCell.className = 'lyric-cell translated';
-      transCell.textContent = line.translated || '';
-      if (isTargetRTL) transCell.setAttribute('dir', 'rtl');
-      row.appendChild(transCell);
+                const transCell = document.createElement('div');
+                transCell.className = 'lyric-cell translated';
+                transCell.textContent = line.translated || '';
+                if (isTargetRTL) transCell.setAttribute('dir', 'rtl');
+                row.appendChild(transCell);
 
-      lyricsRows.appendChild(row);
-    });
+                lyricsRows.appendChild(row);
+            });
 
-    resultCard.classList.add('visible');
-    resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+            resultCard.classList.add('visible');
+            resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
 
-  function esc(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-</script>
+        function esc(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+    </script>
 </body>
+
 </html>
