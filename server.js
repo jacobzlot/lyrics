@@ -45,7 +45,7 @@ const pool = new Pool({
       created_at TIMESTAMP DEFAULT NOW()
     );
     CREATE INDEX IF NOT EXISTS idx_tlog_date ON translation_log (created_at, song_id);
-  \`);
+  `);
   console.log('DB ready');
 })().catch(console.error);
 
