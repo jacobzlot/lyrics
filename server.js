@@ -315,11 +315,6 @@ app.get('/api/playlist/apple/debug', async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
-```
-
-Then deploy and visit:
-```
-https://lyrics-production-a6bc.up.railway.app/api/playlist/apple/debug?url=YOUR_APPLE_MUSIC_PLAYLIST_URL
 
 // ── 5. Apple Music playlist — public page scrape ───────────────────────────────
 app.get('/api/playlist/apple', async (req, res) => {
