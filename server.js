@@ -1,3 +1,4 @@
+// FINAL VERSION
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
@@ -269,50 +270,6 @@ app.get('/api/playlist/spotify', async (req, res) => {
   } catch (e) {
     console.error('Spotify embed scrape failed:', e.message);
     res.status(500).json({ error: 'Failed to fetch Spotify playlist.' });
-  }
-});
-
-// ── DEBUG: see raw Apple Music page data ──────────────────────
-app.get('/api/playlist/apple/debug', async (req, res) => {
-  const { url } = req.query;
-  try {
-    const r = await axios.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml',
-        'Accept-Language': 'en-US,en;q=0.9'
-      },
-      timeout: 12000
-    });
-
-    const $ = cheerio.load(r.data);
-
-    // Collect all script tags and their types
-    const scripts = [];
-    $('script').each((i, el) => {
-      scripts.push({
-        type: $(el).attr('type') || 'none',
-        id: $(el).attr('id') || 'none',
-        preview: $(el).text().slice(0, 300)
-      });
-    });
-
-    // Try to parse any JSON-LD
-    const jsonlds = [];
-    $('script[type="application/ld+json"]').each((_, el) => {
-      try {
-        jsonlds.push(JSON.parse($(el).text()));
-      } catch (e) {
-        jsonlds.push({ parseError: e.message, raw: $(el).text().slice(0, 500) });
-      }
-    });
-
-    // Check for Next.js data
-    const nextData = $('#__NEXT_DATA__').text().slice(0, 1000);
-
-    res.json({ scriptCount: scripts.length, scripts, jsonlds, nextData });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
   }
 });
 
