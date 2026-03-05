@@ -1,4 +1,3 @@
-// FINAL VERSION
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
@@ -40,8 +39,59 @@ const pool = new Pool({
       UNIQUE(song_id, language)
     );
   `);
-  console.log('✅ DB ready');
+  console.log('DB ready');
 })().catch(console.error);
+
+// ── Apple Music helpers ────────────────────────────────────────────────────────
+
+// Recursively walk any JSON object and collect anything that looks like a track
+function deepFindTracks(obj, found, depth) {
+  found = found || [];
+  depth = depth || 0;
+  if (depth > 12 || !obj || typeof obj !== 'object') return found;
+
+  if (Array.isArray(obj)) {
+    for (var i = 0; i < obj.length; i++) {
+      var item = obj[i];
+      if (item && typeof item === 'object' && !Array.isArray(item)) {
+        var title  = item.title  || item.name  || (item.attributes && item.attributes.name);
+        var artist = item.artistName || (item.attributes && item.attributes.artistName)
+                   || (item.artist && item.artist.name) || item.subtitle;
+        if (title && artist && typeof title === 'string' && typeof artist === 'string'
+            && title.length > 0 && artist.length > 0) {
+          var artworkUrl = (item.artwork && item.artwork.url)
+            || (item.attributes && item.attributes.artwork && item.attributes.artwork.url)
+            || item.imageUrl
+            || null;
+          if (artworkUrl) {
+            artworkUrl = artworkUrl
+              .replace('{w}', '60').replace('{h}', '60')
+              .replace('{f}', 'jpg').replace('{c}', 'sr');
+          }
+          found.push({ title: title, artist: artist, thumbnail: artworkUrl });
+          continue;
+        }
+      }
+      deepFindTracks(item, found, depth + 1);
+    }
+  } else {
+    var vals = Object.values(obj);
+    for (var j = 0; j < vals.length; j++) {
+      deepFindTracks(vals[j], found, depth + 1);
+    }
+  }
+  return found;
+}
+
+function dedupe(tracks) {
+  var seen = {};
+  return tracks.filter(function(t) {
+    var key = (t.title + '||' + t.artist).toLowerCase();
+    if (seen[key]) return false;
+    seen[key] = true;
+    return true;
+  });
+}
 
 // ── 1. Search autocomplete ─────────────────────────────────────────────────────
 app.get('/api/search', async (req, res) => {
@@ -71,19 +121,17 @@ app.get('/api/lyrics', async (req, res) => {
   const { artist, title } = req.query;
   if (!artist || !title) return res.status(400).json({ error: 'Missing artist or title' });
 
-  // Check DB cache
   try {
     const cached = await pool.query(
       'SELECT lyrics FROM songs WHERE artist=$1 AND title=$2', [artist, title]
     );
-    if (cached.rows[0]?.lyrics) {
+    if (cached.rows[0] && cached.rows[0].lyrics) {
       return res.json({ lyrics: cached.rows[0].lyrics, fromCache: true });
     }
   } catch (e) { console.error('DB read error:', e.message); }
 
   let lyrics = null;
 
-  // Genius
   try {
     const s = await axios.get('https://api.genius.com/search', {
       params: { q: `${title} ${artist}` },
@@ -93,8 +141,8 @@ app.get('/api/lyrics', async (req, res) => {
     if (hit) {
       const p = await axios.get(hit.result.url, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept': 'text/html,application/xhtml+xml',
           'Accept-Language': 'en-US,en;q=0.9',
           'Referer': 'https://www.google.com/'
         },
@@ -110,7 +158,6 @@ app.get('/api/lyrics', async (req, res) => {
     }
   } catch (e) { console.error('Genius failed:', e.message); }
 
-  // lrclib fallback
   if (!lyrics) {
     try {
       const r = await axios.get('https://lrclib.net/api/get', {
@@ -120,7 +167,6 @@ app.get('/api/lyrics', async (req, res) => {
     } catch (e) { console.error('lrclib failed:', e.message); }
   }
 
-  // lyrics.ovh fallback
   if (!lyrics) {
     try {
       const r = await axios.get(
@@ -135,7 +181,6 @@ app.get('/api/lyrics', async (req, res) => {
     return res.status(404).json({ error: 'Lyrics not found. Try searching with a slightly different title.' });
   }
 
-  // Save to DB
   try {
     await pool.query(
       `INSERT INTO songs (artist, title, lyrics) VALUES ($1,$2,$3)
@@ -154,23 +199,21 @@ app.post('/api/translate', async (req, res) => {
     return res.status(400).json({ error: 'Missing lyrics or target language' });
   }
 
-  // Look up song_id
   let songId = null;
   try {
     const row = await pool.query(
       'SELECT id FROM songs WHERE artist=$1 AND title=$2', [artist || '', title || '']
     );
-    songId = row.rows[0]?.id || null;
+    songId = row.rows[0] ? row.rows[0].id : null;
   } catch (e) { console.error('DB song lookup error:', e.message); }
 
-  // Check translation cache
   if (songId) {
     try {
       const cached = await pool.query(
         'SELECT source_lang, lines FROM translations WHERE song_id=$1 AND language=$2',
         [songId, targetLanguage]
       );
-      if (cached.rows[0]?.lines) {
+      if (cached.rows[0] && cached.rows[0].lines) {
         return res.json({
           sourceLanguage: cached.rows[0].source_lang,
           lines: cached.rows[0].lines,
@@ -180,7 +223,6 @@ app.post('/api/translate', async (req, res) => {
     } catch (e) { console.error('DB translation lookup error:', e.message); }
   }
 
-  // Call GPT-4o
   try {
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
@@ -212,7 +254,6 @@ For blank lines between verses, use: { "original": "", "translated": "" }`
     }
     if (!result.sourceLanguage) result.sourceLanguage = 'Unknown';
 
-    // Save translation
     if (songId) {
       try {
         await pool.query(
@@ -253,8 +294,14 @@ app.get('/api/playlist/spotify', async (req, res) => {
     const raw = $('#__NEXT_DATA__').text();
     if (!raw) return res.status(422).json({ error: 'Could not read Spotify embed data. Make sure the playlist is public.' });
 
-    const json   = JSON.parse(raw);
-    const items  = json?.props?.pageProps?.state?.data?.entity?.trackList || [];
+    const json  = JSON.parse(raw);
+    const items = json &&
+                  json.props &&
+                  json.props.pageProps &&
+                  json.props.pageProps.state &&
+                  json.props.pageProps.state.data &&
+                  json.props.pageProps.state.data.entity &&
+                  json.props.pageProps.state.data.entity.trackList || [];
 
     if (!items.length) {
       return res.status(422).json({ error: 'No tracks found. Make sure the playlist is set to public.' });
@@ -273,7 +320,7 @@ app.get('/api/playlist/spotify', async (req, res) => {
   }
 });
 
-// ── 5. Apple Music playlist — public page scrape ───────────────────────────────
+// ── 5. Apple Music playlist — deep search parser ───────────────────────────────
 app.get('/api/playlist/apple', async (req, res) => {
   const { url } = req.query;
   if (!url) return res.status(400).json({ error: 'Missing url' });
@@ -289,27 +336,25 @@ app.get('/api/playlist/apple', async (req, res) => {
     });
 
     const $ = cheerio.load(r.data);
-    const tracks = [];
+    const rawData = $('script#serialized-server-data').text();
 
-    // Apple Music embeds track data as JSON-LD
-    $('script[type="application/ld+json"]').each((_, el) => {
-      try {
-        const data  = JSON.parse($(el).text());
-        const items = data?.track || data?.workExample || [];
-        items.forEach(item => {
-          if (item.name) {
-            tracks.push({
-              title: item.name,
-              artist: item.byArtist?.name || 'Unknown',
-              thumbnail: null
-            });
-          }
-        });
-      } catch {}
-    });
+    if (!rawData) {
+      return res.status(422).json({ error: 'Could not find Apple Music data. Make sure the playlist is public.' });
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(rawData);
+    } catch (e) {
+      return res.status(422).json({ error: 'Failed to parse Apple Music page data.' });
+    }
+
+    const tracks = dedupe(deepFindTracks(parsed));
 
     if (!tracks.length) {
-      return res.status(422).json({ error: 'No tracks found. Make sure the playlist is set to public.' });
+      return res.status(422).json({
+        error: 'No tracks found. Make sure the playlist is public and the link contains "pl." in the URL.'
+      });
     }
 
     res.json({ tracks });
@@ -319,5 +364,29 @@ app.get('/api/playlist/apple', async (req, res) => {
   }
 });
 
+// ── DEBUG: inspect Apple Music page structure ──────────────────────────────────
+app.get('/api/playlist/apple/debug', async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ error: 'Missing url' });
+  try {
+    const r = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml',
+        'Accept-Language': 'en-US,en;q=0.9'
+      },
+      timeout: 12000
+    });
+    const $ = cheerio.load(r.data);
+    const rawData = $('script#serialized-server-data').text();
+    if (!rawData) return res.json({ error: 'No serialized-server-data found' });
+    const parsed = JSON.parse(rawData);
+    const tracks = dedupe(deepFindTracks(parsed));
+    res.json({ tracksFound: tracks.length, sampleTracks: tracks.slice(0, 5), fullData: parsed });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Lyra running on port ${PORT}`));
+app.listen(PORT, () => console.log('Lyra running on port ' + PORT));
