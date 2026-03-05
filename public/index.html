@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shir — Song Lyrics Translator</title>
-  <link rel="icon" type="image/png" href="/favicon.svg">
+  <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
@@ -553,13 +553,123 @@
       .playlist-url-row { flex-direction: column; }
       .import-btn { width: 100%; justify-content: center; }
     }
+
+    /* ── Featured Today ── */
+    .featured-section {
+      margin-bottom: 40px;
+    }
+
+    .featured-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .featured-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .featured-card {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      padding: 18px 20px;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .featured-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 2px 12px rgba(58,140,50,0.08);
+    }
+
+    .featured-rank {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .featured-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .featured-artist {
+      font-size: 0.78rem;
+      color: var(--ink-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .featured-count {
+      font-size: 0.72rem;
+      color: var(--ink-light);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .featured-skeleton {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .skel-line {
+      height: 10px;
+      background: var(--rule);
+      border-radius: 2px;
+      animation: shimmer 1.4s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    @media (max-width: 600px) {
+      .featured-grid { grid-template-columns: 1fr; }
+    }
+
   </style>
 </head>
 <body>
 
 <header>
   <div class="logo">
-    <img src="/favicon.svg" alt="Shir" class="logo-icon">
+    <img src="/favicon.png" alt="Shir" class="logo-icon">
     <span class="logo-text">Shir</span>
     <span class="logo-tagline">Lyrics Translator</span>
   </div>
@@ -568,6 +678,23 @@
 <main>
   <h1 class="page-title">Translate any song,<br><em>line by line.</em></h1>
   <p class="page-subtitle">Search for a song or import a playlist, choose your language, and read along.</p>
+
+
+  <!-- Featured Today -->
+  <div class="featured-section" id="featuredSection">
+    <div class="featured-label">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+      Featured Today
+    </div>
+    <div class="featured-grid" id="featuredGrid">
+      <!-- skeleton cards while loading -->
+      <div class="featured-skeleton"><div class="skel-line" style="width:40%"></div><div class="skel-line" style="width:80%"></div><div class="skel-line" style="width:55%"></div></div>
+      <div class="featured-skeleton"><div class="skel-line" style="width:40%"></div><div class="skel-line" style="width:70%"></div><div class="skel-line" style="width:60%"></div></div>
+      <div class="featured-skeleton"><div class="skel-line" style="width:40%"></div><div class="skel-line" style="width:75%"></div><div class="skel-line" style="width:50%"></div></div>
+    </div>
+  </div>
 
   <div class="card">
     <div class="card-tabs">
@@ -929,6 +1056,46 @@
   langTrigger.addEventListener('click', e => { e.stopPropagation(); langWrapper.classList.toggle('open'); });
 
   function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  // ── Featured Today ────────────────────────────────────────────
+  async function loadFeatured() {
+    try {
+      const res  = await fetch('/api/featured');
+      const data = await res.json();
+      const grid = document.getElementById('featuredGrid');
+
+      if (!data.songs || data.songs.length === 0) {
+        document.getElementById('featuredSection').style.display = 'none';
+        return;
+      }
+
+      const ranks = ['#1', '#2', '#3'];
+      grid.innerHTML = data.songs.map((song, i) => `
+        <div class="featured-card" onclick="featuredSelect('${esc(song.artist)}', '${esc(song.title)}')">
+          <div class="featured-rank">${ranks[i]} Today</div>
+          <div class="featured-title">${esc(song.title)}</div>
+          <div class="featured-artist">${esc(song.artist)}</div>
+          <div class="featured-count">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            ${song.requests} translation${song.requests == 1 ? '' : 's'} today
+          </div>
+        </div>
+      `).join('');
+    } catch {
+      document.getElementById('featuredSection').style.display = 'none';
+    }
+  }
+
+  function featuredSelect(artist, title) {
+    selectSong({ title, artist, thumbnail: null });
+    searchInput.value = `${title} — ${artist}`;
+    // Switch to search tab and scroll to card
+    switchTab('search');
+    document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  loadFeatured();
+
 </script>
 </body>
 </html>

@@ -38,7 +38,14 @@ const pool = new Pool({
       created_at  TIMESTAMP DEFAULT NOW(),
       UNIQUE(song_id, language)
     );
-  `);
+    CREATE TABLE IF NOT EXISTS translation_log (
+      id         SERIAL PRIMARY KEY,
+      song_id    INTEGER REFERENCES songs(id) ON DELETE CASCADE,
+      language   TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_tlog_date ON translation_log (created_at, song_id);
+  \`);
   console.log('DB ready');
 })().catch(console.error);
 
@@ -264,6 +271,14 @@ For blank lines between verses, use: { "original": "", "translated": "" }`
       } catch (e) { console.error('DB translation save error:', e.message); }
     }
 
+    // Log every translation request for featured/trending
+    if (songId) {
+      pool.query(
+        'INSERT INTO translation_log (song_id, language) VALUES ($1, $2)',
+        [songId, targetLanguage]
+      ).catch(() => {});
+    }
+
     res.json(result);
   } catch (e) {
     console.error('GPT error:', e.message);
@@ -385,6 +400,26 @@ app.get('/api/playlist/apple/debug', async (req, res) => {
     res.json({ tracksFound: tracks.length, sampleTracks: tracks.slice(0, 5), fullData: parsed });
   } catch (e) {
     res.status(500).json({ error: e.message });
+  }
+});
+
+// ── 6. Featured today — top 3 most translated songs today ────────────────────
+app.get('/api/featured', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT s.title, s.artist,
+             COUNT(l.id) AS requests
+      FROM translation_log l
+      JOIN songs s ON s.id = l.song_id
+      WHERE l.created_at >= CURRENT_DATE
+      GROUP BY s.id, s.title, s.artist
+      ORDER BY requests DESC
+      LIMIT 3
+    `);
+    res.json({ songs: result.rows });
+  } catch (e) {
+    console.error('Featured query error:', e.message);
+    res.json({ songs: [] });
   }
 });
 
