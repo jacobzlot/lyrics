@@ -403,7 +403,51 @@ app.get('/api/playlist/apple/debug', async (req, res) => {
   }
 });
 
-// ── 6. Featured today — top 3 most translated songs today ────────────────────
+// ── 6. YouTube video search ───────────────────────────────────────────────────
+app.get('/api/youtube', async (req, res) => {
+  const { title, artist } = req.query;
+  if (!title || !artist) return res.status(400).json({ error: 'Missing title or artist' });
+
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) {
+    console.error('YouTube: YOUTUBE_API_KEY not set');
+    return res.status(503).json({ error: 'YouTube not configured' });
+  }
+
+  const query = `${title} ${artist} official`;
+
+  try {
+    const r = await axios.get('https://www.googleapis.com/youtube/v3/search', {
+      params: {
+        part: 'snippet',
+        q: query,
+        type: 'video',
+        maxResults: 1,
+        key: apiKey
+      },
+      timeout: 8000
+    });
+
+    const videoId = r.data?.items?.[0]?.id?.videoId;
+    if (!videoId) {
+      console.warn(`YouTube: no results for "${query}"`);
+      return res.status(404).json({ error: 'No video found' });
+    }
+
+    res.json({ videoId });
+  } catch (e) {
+    const status = e.response?.status;
+    const ytError = e.response?.data?.error?.message || e.message;
+    console.error(`YouTube API error (HTTP ${status}):`, ytError);
+
+    if (status === 403) {
+      return res.status(403).json({ error: 'YouTube quota exceeded or API key invalid' });
+    }
+    res.status(500).json({ error: 'YouTube search failed' });
+  }
+});
+
+// ── 7. Featured today — top 3 most translated songs today ────────────────────
 app.get('/api/featured', async (req, res) => {
   try {
     const result = await pool.query(`
