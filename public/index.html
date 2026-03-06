@@ -8,13 +8,15 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/png" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
   <!-- Open Graph (Facebook, iMessage, Discord, etc.) -->
   <meta property="og:image" content="https://www.shirlyrics.com/shir.png" />
   <meta property="og:title" content="Shir" />
   <meta property="og:description" content="Translate song lyrics instantly" />
   <meta property="og:url" content="https://www.shirlyrics.com" />
- 
+
   <!-- Twitter/X specifically -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://www.shirlyrics.com/shir.png" />
@@ -1314,13 +1316,17 @@
     Content is provided for personal, educational use only. Lyrics remain the property of their respective copyright
     holders.
     <br>
-    For copyright concerns or DMCA takedown requests: <a
-      href="/cdn-cgi/l/email-protection#c0aabaacafb4aea9b4b3abb980a7ada1a9aceea3afad"
-      style="color:var(--ink-light);text-decoration:underline;"><span class="__cf_email__"
-        data-cfemail="78120214170c16110c0b1301381f15191114561b1715">[email&#160;protected]</span></a>
+    For copyright concerns or DMCA takedown requests: <a id="contact-link"
+      style="color:var(--ink-light);text-decoration:underline;"></a>
   </footer>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script>
+    const u = 'jzlotnitsky';
+    const d = 'gmail.com';
+    const link = document.getElementById('contact-link');
+    link.href = 'mailto:' + u + '@' + d;
+    link.textContent = u + '@' + d;
+  </script>
   <script>
     const RTL_LANGUAGES = new Set(['Hebrew', 'Arabic']);
     let selectedSong = null, searchTimer = null;
