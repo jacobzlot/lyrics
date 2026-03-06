@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,17 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/png" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
       --ink: #1a1612;
@@ -23,7 +32,9 @@
       --accent-light: #eef6ed;
     }
 
-    html { font-size: 16px; }
+    html {
+      font-size: 16px;
+    }
 
     body {
       font-family: 'DM Sans', sans-serif;
@@ -43,7 +54,11 @@
       height: 64px;
     }
 
-    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
     .logo-icon {
       width: 32px;
@@ -58,6 +73,7 @@
       letter-spacing: -0.02em;
       color: var(--ink);
     }
+
     .logo-tagline {
       font-size: 0.75rem;
       color: var(--ink-light);
@@ -83,7 +99,11 @@
       letter-spacing: -0.03em;
       margin-bottom: 8px;
     }
-    .page-title em { font-style: italic; color: var(--accent); }
+
+    .page-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
 
     .page-subtitle {
       font-size: 0.9rem;
@@ -113,7 +133,10 @@
       align-items: center;
       gap: 6px;
     }
-    .card-label svg { flex-shrink: 0; }
+
+    .card-label svg {
+      flex-shrink: 0;
+    }
 
     /* ── Card tabs ── */
     .card-tabs {
@@ -122,6 +145,7 @@
       margin: -36px -40px 28px;
       padding: 0 40px;
     }
+
     .card-tab {
       font-family: 'DM Sans', sans-serif;
       font-size: 0.78rem;
@@ -138,11 +162,20 @@
       margin-bottom: -1px;
       transition: color 0.15s, border-color 0.15s;
     }
-    .card-tab:hover { color: var(--ink-mid); }
-    .card-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+    .card-tab:hover {
+      color: var(--ink-mid);
+    }
+
+    .card-tab.active {
+      color: var(--ink);
+      border-bottom-color: var(--accent);
+    }
 
     /* ── Search ── */
-    .search-wrapper { position: relative; }
+    .search-wrapper {
+      position: relative;
+    }
 
     .search-input-row {
       display: flex;
@@ -153,7 +186,10 @@
       transition: border-color 0.15s;
       overflow: visible;
     }
-    .search-input-row:focus-within { border-color: var(--ink); }
+
+    .search-input-row:focus-within {
+      border-color: var(--ink);
+    }
 
     .search-icon {
       padding: 0 14px;
@@ -173,7 +209,10 @@
       color: var(--ink);
       background: transparent;
     }
-    #searchInput::placeholder { color: var(--ink-light); }
+
+    #searchInput::placeholder {
+      color: var(--ink-light);
+    }
 
     .clear-btn {
       padding: 0 14px;
@@ -184,22 +223,32 @@
       display: none;
       align-items: center;
     }
-    .clear-btn.visible { display: flex; }
-    .clear-btn:hover { color: var(--ink); }
+
+    .clear-btn.visible {
+      display: flex;
+    }
+
+    .clear-btn:hover {
+      color: var(--ink);
+    }
 
     .dropdown {
       position: absolute;
       top: calc(100% + 4px);
-      left: 0; right: 0;
+      left: 0;
+      right: 0;
       background: var(--white);
       border: 1.5px solid var(--ink);
       border-radius: 2px;
       z-index: 200;
       display: none;
       overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     }
-    .dropdown.open { display: block; }
+
+    .dropdown.open {
+      display: block;
+    }
 
     .ac-item {
       display: flex;
@@ -210,10 +259,25 @@
       border-bottom: 1px solid var(--rule);
       transition: background 0.1s;
     }
-    .ac-item:last-child { border-bottom: none; }
-    .ac-item:hover { background: var(--surface); }
-    .ac-item svg { color: var(--ink-light); flex-shrink: 0; }
-    .ac-text { flex: 1; min-width: 0; }
+
+    .ac-item:last-child {
+      border-bottom: none;
+    }
+
+    .ac-item:hover {
+      background: var(--surface);
+    }
+
+    .ac-item svg {
+      color: var(--ink-light);
+      flex-shrink: 0;
+    }
+
+    .ac-text {
+      flex: 1;
+      min-width: 0;
+    }
+
     .ac-title {
       font-size: 0.9rem;
       font-weight: 500;
@@ -222,7 +286,12 @@
       text-overflow: ellipsis;
       color: var(--ink);
     }
-    .ac-artist { font-size: 0.78rem; color: var(--ink-light); margin-top: 1px; }
+
+    .ac-artist {
+      font-size: 0.78rem;
+      color: var(--ink-light);
+      margin-top: 1px;
+    }
 
     /* ── Controls row ── */
     .controls-row {
@@ -232,10 +301,15 @@
       align-items: end;
       margin-top: 20px;
     }
-    .field-group { display: flex; flex-direction: column; }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+    }
 
     /* ── Buttons ── */
-    .translate-btn, .import-btn {
+    .translate-btn,
+    .import-btn {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -251,20 +325,49 @@
       transition: background 0.15s, opacity 0.15s;
       white-space: nowrap;
     }
-    .translate-btn { padding: 13px 28px; }
-    .import-btn    { padding: 13px 22px; flex-shrink: 0; }
+
+    .translate-btn {
+      padding: 13px 28px;
+    }
+
+    .import-btn {
+      padding: 13px 22px;
+      flex-shrink: 0;
+    }
+
     .translate-btn:hover:not(:disabled),
-    .import-btn:hover:not(:disabled) { background: var(--accent-hover); }
+    .import-btn:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
     .translate-btn:disabled,
-    .import-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .import-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
 
     /* ── Playlist panel ── */
-    .playlist-panel { display: none; }
-    .playlist-panel.active { display: block; }
-    .search-panel { display: block; }
-    .search-panel.hidden { display: none; }
+    .playlist-panel {
+      display: none;
+    }
 
-    .playlist-url-row { display: flex; gap: 12px; align-items: stretch; }
+    .playlist-panel.active {
+      display: block;
+    }
+
+    .search-panel {
+      display: block;
+    }
+
+    .search-panel.hidden {
+      display: none;
+    }
+
+    .playlist-url-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+    }
 
     .playlist-url-input-wrap {
       flex: 1;
@@ -275,7 +378,10 @@
       background: var(--white);
       transition: border-color 0.15s;
     }
-    .playlist-url-input-wrap:focus-within { border-color: var(--ink); }
+
+    .playlist-url-input-wrap:focus-within {
+      border-color: var(--ink);
+    }
 
     #playlistUrl {
       flex: 1;
@@ -287,7 +393,10 @@
       color: var(--ink);
       background: transparent;
     }
-    #playlistUrl::placeholder { color: var(--ink-light); }
+
+    #playlistUrl::placeholder {
+      color: var(--ink-light);
+    }
 
     .playlist-hint {
       font-size: 0.78rem;
@@ -306,7 +415,10 @@
       overflow: hidden;
       display: none;
     }
-    .track-list.visible { display: block; }
+
+    .track-list.visible {
+      display: block;
+    }
 
     .track-list-header {
       display: flex;
@@ -316,6 +428,7 @@
       background: var(--surface);
       border-bottom: 1px solid var(--rule);
     }
+
     .track-list-title {
       font-size: 0.68rem;
       font-weight: 500;
@@ -323,12 +436,29 @@
       text-transform: uppercase;
       color: var(--ink-light);
     }
-    .track-count { font-size: 0.72rem; color: var(--ink-light); }
 
-    .track-items { max-height: 340px; overflow-y: auto; }
-    .track-items::-webkit-scrollbar { width: 4px; }
-    .track-items::-webkit-scrollbar-track { background: transparent; }
-    .track-items::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 2px; }
+    .track-count {
+      font-size: 0.72rem;
+      color: var(--ink-light);
+    }
+
+    .track-items {
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    .track-items::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .track-items::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .track-items::-webkit-scrollbar-thumb {
+      background: var(--rule);
+      border-radius: 2px;
+    }
 
     .track-item {
       display: flex;
@@ -339,33 +469,73 @@
       border-bottom: 1px solid var(--rule);
       transition: background 0.1s;
     }
-    .track-item:last-child { border-bottom: none; }
-    .track-item:hover { background: var(--surface); }
-    .track-item.selected { background: var(--accent-light); border-left: 2px solid var(--accent); }
+
+    .track-item:last-child {
+      border-bottom: none;
+    }
+
+    .track-item:hover {
+      background: var(--surface);
+    }
+
+    .track-item.selected {
+      background: var(--accent-light);
+      border-left: 2px solid var(--accent);
+    }
 
     .track-thumb {
-      width: 38px; height: 38px;
-      border-radius: 2px; object-fit: cover;
-      flex-shrink: 0; border: 1px solid var(--rule);
-    }
-    .track-thumb-placeholder {
-      width: 38px; height: 38px;
+      width: 38px;
+      height: 38px;
       border-radius: 2px;
-      background: var(--surface); border: 1px solid var(--rule);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; color: var(--ink-light);
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--rule);
     }
-    .track-info { flex: 1; min-width: 0; }
+
+    .track-thumb-placeholder {
+      width: 38px;
+      height: 38px;
+      border-radius: 2px;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--ink-light);
+    }
+
+    .track-info {
+      flex: 1;
+      min-width: 0;
+    }
+
     .track-title {
-      font-size: 0.875rem; font-weight: 500;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink);
+      font-size: 0.875rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--ink);
     }
+
     .track-artist {
-      font-size: 0.78rem; color: var(--ink-light); margin-top: 1px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 0.78rem;
+      color: var(--ink-light);
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .track-select-icon { color: var(--ink-light); flex-shrink: 0; }
-    .track-item.selected .track-select-icon { color: var(--accent); }
+
+    .track-select-icon {
+      color: var(--ink-light);
+      flex-shrink: 0;
+    }
+
+    .track-item.selected .track-select-icon {
+      color: var(--accent);
+    }
 
     /* ── Status / Error ── */
     .status-bar {
@@ -380,17 +550,26 @@
       color: var(--ink-mid);
       margin-top: 20px;
     }
-    .status-bar.visible { display: flex; }
+
+    .status-bar.visible {
+      display: flex;
+    }
 
     .spinner {
-      width: 16px; height: 16px;
+      width: 16px;
+      height: 16px;
       border: 2px solid var(--rule);
       border-top-color: var(--accent);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       flex-shrink: 0;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     .error-bar {
       display: none;
@@ -404,7 +583,10 @@
       color: var(--accent-hover);
       margin-top: 20px;
     }
-    .error-bar.visible { display: flex; }
+
+    .error-bar.visible {
+      display: flex;
+    }
 
     /* ── Result card ── */
     .result-card {
@@ -414,7 +596,10 @@
       border-radius: 2px;
       overflow: hidden;
     }
-    .result-card.visible { display: block; }
+
+    .result-card.visible {
+      display: block;
+    }
 
     .result-header {
       padding: 24px 40px;
@@ -425,134 +610,316 @@
       gap: 20px;
       flex-wrap: wrap;
     }
+
     .result-song-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.4rem; font-weight: 600;
+      font-size: 1.4rem;
+      font-weight: 600;
       letter-spacing: -0.02em;
     }
-    .result-song-artist { font-size: 0.85rem; color: var(--ink-mid); font-weight: 300; margin-top: 2px; }
 
-    .result-badges { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .result-song-artist {
+      font-size: 0.85rem;
+      color: var(--ink-mid);
+      font-weight: 300;
+      margin-top: 2px;
+    }
+
+    .result-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
     .lang-badge {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--ink-light); background: var(--surface);
-      border: 1px solid var(--rule); padding: 5px 11px;
-      border-radius: 100px; white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      padding: 5px 11px;
+      border-radius: 100px;
+      white-space: nowrap;
     }
-    .lang-badge svg { color: var(--ink-light); }
+
+    .lang-badge svg {
+      color: var(--ink-light);
+    }
 
     .cache-badge {
-      display: flex; align-items: center; gap: 5px;
-      font-size: 0.68rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--accent-hover); background: var(--accent-light);
-      border: 1px solid #b8d9b4; padding: 5px 11px;
-      border-radius: 100px; white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-hover);
+      background: var(--accent-light);
+      border: 1px solid #b8d9b4;
+      padding: 5px 11px;
+      border-radius: 100px;
+      white-space: nowrap;
     }
 
     .col-header-row {
-      display: grid; grid-template-columns: 1fr 1fr;
-      background: var(--surface); border-bottom: 1px solid var(--rule);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--surface);
+      border-bottom: 1px solid var(--rule);
     }
+
     .col-header {
       padding: 10px 40px;
-      font-size: 0.68rem; font-weight: 500;
-      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-light);
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
     }
-    .col-header:first-child { border-right: 1px solid var(--rule); }
+
+    .col-header:first-child {
+      border-right: 1px solid var(--rule);
+    }
 
     .lyric-row {
-      display: grid; grid-template-columns: 1fr 1fr;
-      border-bottom: 1px solid var(--rule); transition: background 0.1s;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--rule);
+      transition: background 0.1s;
     }
-    .lyric-row:last-child { border-bottom: none; }
-    .lyric-row:hover { background: #fdfcfa; }
 
-    .lyric-cell { padding: 13px 40px; font-size: 0.875rem; line-height: 1.7; color: var(--ink); }
-    .lyric-cell.original { border-right: 1px solid var(--rule); color: var(--ink-mid); }
-    .lyric-cell.translated { color: var(--ink); font-weight: 400; }
-    .lyric-row.blank .lyric-cell { padding: 6px 40px; }
-    .lyric-cell[dir="rtl"] { text-align: right; }
+    .lyric-row:last-child {
+      border-bottom: none;
+    }
+
+    .lyric-row:hover {
+      background: #fdfcfa;
+    }
+
+    .lyric-cell {
+      padding: 13px 40px;
+      font-size: 0.875rem;
+      line-height: 1.7;
+      color: var(--ink);
+    }
+
+    .lyric-cell.original {
+      border-right: 1px solid var(--rule);
+      color: var(--ink-mid);
+    }
+
+    .lyric-cell.translated {
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    .lyric-row.blank .lyric-cell {
+      padding: 6px 40px;
+    }
+
+    .lyric-cell[dir="rtl"] {
+      text-align: right;
+    }
 
     .ac-thumb {
-      width: 38px; height: 38px; border-radius: 50%;
-      object-fit: cover; flex-shrink: 0;
-      background: var(--surface); border: 1px solid var(--rule);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--rule);
     }
+
     .ac-thumb-placeholder {
-      width: 38px; height: 38px; border-radius: 50%;
-      background: var(--surface); border: 1px solid var(--rule);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; color: var(--ink-light);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--ink-light);
     }
 
     /* ── Language selector ── */
-    .lang-select-wrapper { position: relative; }
+    .lang-select-wrapper {
+      position: relative;
+    }
 
     .lang-select-trigger {
-      display: flex; align-items: center; gap: 10px;
-      border: 1.5px solid var(--rule); border-radius: 2px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1.5px solid var(--rule);
+      border-radius: 2px;
       padding: 11px 36px 11px 12px;
-      font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: var(--ink);
-      background: var(--white); cursor: pointer; outline: none;
-      width: 100%; text-align: left; transition: border-color 0.15s;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: var(--ink);
+      background: var(--white);
+      cursor: pointer;
+      outline: none;
+      width: 100%;
+      text-align: left;
+      transition: border-color 0.15s;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239c948c' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 14px center;
+      background-repeat: no-repeat;
+      background-position: right 14px center;
     }
+
     .lang-select-trigger:focus,
-    .lang-select-wrapper.open .lang-select-trigger { border-color: var(--ink); }
+    .lang-select-wrapper.open .lang-select-trigger {
+      border-color: var(--ink);
+    }
 
     .lang-flag {
-      width: 22px; height: 22px; border-radius: 50%;
-      object-fit: cover; flex-shrink: 0; border: 1px solid var(--rule);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--rule);
       background: var(--surface);
     }
 
     .lang-select-dropdown {
       display: none;
-      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-      background: var(--white); border: 1.5px solid var(--ink);
-      border-radius: 2px; z-index: 300;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      max-height: 260px; overflow-y: auto;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: var(--white);
+      border: 1.5px solid var(--ink);
+      border-radius: 2px;
+      z-index: 300;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      max-height: 260px;
+      overflow-y: auto;
     }
-    .lang-select-wrapper.open .lang-select-dropdown { display: block; }
+
+    .lang-select-wrapper.open .lang-select-dropdown {
+      display: block;
+    }
 
     .lang-option {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 14px; cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
       border-bottom: 1px solid var(--rule);
-      font-size: 0.88rem; color: var(--ink); transition: background 0.1s;
+      font-size: 0.88rem;
+      color: var(--ink);
+      transition: background 0.1s;
     }
-    .lang-option:last-child { border-bottom: none; }
-    .lang-option:hover { background: var(--surface); }
-    .lang-option.selected { background: var(--accent-light); }
+
+    .lang-option:last-child {
+      border-bottom: none;
+    }
+
+    .lang-option:hover {
+      background: var(--surface);
+    }
+
+    .lang-option.selected {
+      background: var(--accent-light);
+    }
 
     /* ── Footer ── */
     footer {
-      text-align: center; padding: 40px 24px;
-      font-size: 0.75rem; color: var(--ink-light);
-      border-top: 1px solid var(--rule); margin-top: 40px;
+      text-align: center;
+      padding: 40px 24px;
+      font-size: 0.75rem;
+      color: var(--ink-light);
+      border-top: 1px solid var(--rule);
+      margin-top: 40px;
     }
 
     @media (max-width: 600px) {
-      header { padding: 0 20px; }
-      .logo-tagline { display: none; }
-      main { padding: 32px 16px 60px; }
-      .page-title { font-size: 1.8rem; }
-      .card { padding: 24px 20px; }
-      .card-tabs { margin: -24px -20px 24px; padding: 0 20px; }
-      .controls-row { grid-template-columns: 1fr; }
-      .translate-btn { width: 100%; justify-content: center; }
-      .col-header, .lyric-cell { padding-left: 20px; padding-right: 20px; }
-      .result-header { padding: 20px; }
-      .lyric-cell.original { border-right: none; border-bottom: 1px solid var(--rule); }
-      .lyric-row { grid-template-columns: 1fr; }
-      .col-header-row { grid-template-columns: 1fr; }
-      .col-header:first-child { border-right: none; border-bottom: 1px solid var(--rule); }
-      .playlist-url-row { flex-direction: column; }
-      .import-btn { width: 100%; justify-content: center; }
+      header {
+        padding: 0 20px;
+      }
+
+      .logo-tagline {
+        display: none;
+      }
+
+      main {
+        padding: 32px 16px 60px;
+      }
+
+      .page-title {
+        font-size: 1.8rem;
+      }
+
+      .card {
+        padding: 24px 20px;
+      }
+
+      .card-tabs {
+        margin: -24px -20px 24px;
+        padding: 0 20px;
+      }
+
+      .controls-row {
+        grid-template-columns: 1fr;
+      }
+
+      .translate-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .col-header,
+      .lyric-cell {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .result-header {
+        padding: 20px;
+      }
+
+      .lyric-cell.original {
+        border-right: none;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .lyric-row {
+        grid-template-columns: 1fr;
+      }
+
+      .col-header-row {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .col-header:first-child {
+        border-right: none;
+        border-bottom: none;
+      }
+
+      .col-header:last-child {
+        text-align: right;
+      }
+
+      .playlist-url-row {
+        flex-direction: column;
+      }
+
+      .import-btn {
+        width: 100%;
+        justify-content: center;
+      }
     }
 
     /* ── Featured Today ── */
@@ -599,7 +966,7 @@
 
     .featured-card:hover {
       border-color: var(--accent);
-      box-shadow: 0 2px 12px rgba(58,140,50,0.08);
+      box-shadow: 0 2px 12px rgba(58, 140, 50, 0.08);
     }
 
     .featured-rank {
@@ -656,12 +1023,21 @@
     }
 
     @keyframes shimmer {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.4; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
     }
 
     @media (max-width: 600px) {
-      .featured-grid { grid-template-columns: 1fr; }
+      .featured-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* ── YouTube embed ── */
@@ -669,9 +1045,11 @@
       display: none;
       margin-bottom: 24px;
     }
+
     .youtube-section.visible {
       display: block;
     }
+
     .youtube-frame-wrap {
       position: relative;
       padding-bottom: 56.25%;
@@ -681,459 +1059,531 @@
       border: 1px solid var(--rule);
       background: var(--ink);
     }
+
     .youtube-frame-wrap iframe {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       border: none;
     }
-
   </style>
 </head>
+
 <body>
 
-<header>
-  <div class="logo">
-    <img src="/favicon.svg" alt="Shir" class="logo-icon">
-    <span class="logo-text">Shir</span>
-    <span class="logo-tagline">Lyrics Translator</span>
-  </div>
-</header>
-
-<main>
-  <h1 class="page-title">Translate any song,<br><em>line by line.</em></h1>
-  <p class="page-subtitle">Search for a song or import a playlist, choose your language, and read along.</p>
-
-
-  <!-- Featured Today -->
-  <div class="featured-section" id="featuredSection">
-    <div class="featured-label">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-      </svg>
-      Featured Today
+  <header>
+    <div class="logo">
+      <img src="/favicon.svg" alt="Shir" class="logo-icon">
+      <span class="logo-text">Shir</span>
+      <span class="logo-tagline">Lyrics Translator</span>
     </div>
-    <div class="featured-grid" id="featuredGrid">
-      <!-- skeleton cards while loading -->
-      <div class="featured-skeleton"><div class="skel-line" style="width:40%"></div><div class="skel-line" style="width:80%"></div><div class="skel-line" style="width:55%"></div></div>
-      <div class="featured-skeleton"><div class="skel-line" style="width:40%"></div><div class="skel-line" style="width:70%"></div><div class="skel-line" style="width:60%"></div></div>
-      <div class="featured-skeleton"><div class="skel-line" style="width:40%"></div><div class="skel-line" style="width:75%"></div><div class="skel-line" style="width:50%"></div></div>
-    </div>
-  </div>
+  </header>
 
-  <!-- YouTube Embed (revealed after translation) -->
-  <div class="youtube-section" id="youtubeSection">
-    <div class="featured-label">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="color:var(--ink-light)">
-        <path d="M23 7s-.3-2-1.2-2.8c-1.1-1.2-2.4-1.2-3-1.3C16.2 2.8 12 2.8 12 2.8s-4.2 0-6.8.1c-.6.1-1.9.1-3 1.3C1.3 5 1 7 1 7S.7 9.1.7 11.2v2c0 2.1.3 4.2.3 4.2s.3 2 1.2 2.8c1.1 1.2 2.6 1.1 3.3 1.2C7.2 21.5 12 21.5 12 21.5s4.2 0 6.8-.2c.6-.1 1.9-.1 3-1.3.9-.8 1.2-2.8 1.2-2.8s.3-2.1.3-4.2v-2C23.3 9.1 23 7 23 7zM9.7 15V8.8l6.6 3.1-6.6 3.1z"/>
-      </svg>
-      Listen Along
-    </div>
-    <div class="youtube-frame-wrap">
-      <iframe id="youtubeIframe"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-      </iframe>
-    </div>
-  </div>
+  <main>
+    <h1 class="page-title">Translate any song,<br><em>line by line.</em></h1>
+    <p class="page-subtitle">Search for a song or import a playlist, choose your language, and read along.</p>
 
-  <div class="card">
-    <div class="card-tabs">
-      <button class="card-tab active" id="tab-search-btn" onclick="switchTab('search')">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;vertical-align:middle;margin-right:5px"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        Search
-      </button>
-      <button class="card-tab" id="tab-playlist-btn" onclick="switchTab('playlist')">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;vertical-align:middle;margin-right:5px"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
-        Import Playlist
-      </button>
-    </div>
 
-    <!-- SEARCH PANEL -->
-    <div class="search-panel" id="panel-search">
-      <div class="card-label">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        Find a Song
+    <!-- Featured Today -->
+    <div class="featured-section" id="featuredSection">
+      <div class="featured-label">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polygon
+            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+        Featured Today
       </div>
-      <div class="search-wrapper">
-        <div class="search-input-row">
-          <span class="search-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          </span>
-          <input type="text" id="searchInput" placeholder="Artist, song title, or both…" autocomplete="off" spellcheck="false">
-          <button class="clear-btn" id="clearBtn" type="button" title="Clear">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-          </button>
+      <div class="featured-grid" id="featuredGrid">
+        <!-- skeleton cards while loading -->
+        <div class="featured-skeleton">
+          <div class="skel-line" style="width:40%"></div>
+          <div class="skel-line" style="width:80%"></div>
+          <div class="skel-line" style="width:55%"></div>
         </div>
-        <div class="dropdown" id="dropdown"></div>
+        <div class="featured-skeleton">
+          <div class="skel-line" style="width:40%"></div>
+          <div class="skel-line" style="width:70%"></div>
+          <div class="skel-line" style="width:60%"></div>
+        </div>
+        <div class="featured-skeleton">
+          <div class="skel-line" style="width:40%"></div>
+          <div class="skel-line" style="width:75%"></div>
+          <div class="skel-line" style="width:50%"></div>
+        </div>
       </div>
     </div>
 
-    <!-- PLAYLIST PANEL -->
-    <div class="playlist-panel" id="panel-playlist">
-      <div class="card-label">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
-        Import Playlist
+    <!-- YouTube Embed (revealed after translation) -->
+    <div class="youtube-section" id="youtubeSection">
+      <div class="featured-label">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="color:var(--ink-light)">
+          <path
+            d="M23 7s-.3-2-1.2-2.8c-1.1-1.2-2.4-1.2-3-1.3C16.2 2.8 12 2.8 12 2.8s-4.2 0-6.8.1c-.6.1-1.9.1-3 1.3C1.3 5 1 7 1 7S.7 9.1.7 11.2v2c0 2.1.3 4.2.3 4.2s.3 2 1.2 2.8c1.1 1.2 2.6 1.1 3.3 1.2C7.2 21.5 12 21.5 12 21.5s4.2 0 6.8-.2c.6-.1 1.9-.1 3-1.3.9-.8 1.2-2.8 1.2-2.8s.3-2.1.3-4.2v-2C23.3 9.1 23 7 23 7zM9.7 15V8.8l6.6 3.1-6.6 3.1z" />
+        </svg>
+        Listen Along
       </div>
-      <div class="playlist-url-row">
-        <div class="playlist-url-input-wrap">
-          <span class="search-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-          </span>
-          <input type="text" id="playlistUrl" placeholder="Paste a public Spotify or Apple Music playlist URL…">
-        </div>
-        <button class="import-btn" id="importBtn" onclick="importPlaylist()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Import
+      <div class="youtube-frame-wrap">
+        <iframe id="youtubeIframe"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-tabs">
+        <button class="card-tab active" id="tab-search-btn" onclick="switchTab('search')">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            style="display:inline;vertical-align:middle;margin-right:5px">
+            <circle cx="11" cy="11" r="8" />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
+          Search
+        </button>
+        <button class="card-tab" id="tab-playlist-btn" onclick="switchTab('playlist')">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            style="display:inline;vertical-align:middle;margin-right:5px">
+            <path d="M3 6h18M3 12h18M3 18h12" />
+          </svg>
+          Import Playlist
         </button>
       </div>
-      <p class="playlist-hint">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-        Playlist must be set to public. Works with Spotify and Apple Music.
-      </p>
-      <div class="track-list" id="trackList">
-        <div class="track-list-header">
-          <span class="track-list-title" id="trackListTitle">Tracks</span>
-          <span class="track-count" id="trackCount"></span>
-        </div>
-        <div class="track-items" id="trackItems"></div>
-      </div>
-    </div>
 
-    <!-- Language + Translate -->
-    <div class="controls-row">
-      <div class="field-group">
-        <div class="card-label" style="margin-bottom:8px;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
-          Translate To
+      <!-- SEARCH PANEL -->
+      <div class="search-panel" id="panel-search">
+        <div class="card-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8" />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
+          Find a Song
         </div>
-        <select id="targetLang" style="display:none;"></select>
-        <div class="lang-select-wrapper" id="langSelectWrapper">
-          <button type="button" class="lang-select-trigger" id="langSelectTrigger">
-            <img class="lang-flag" id="langSelectFlag" src="https://flagcdn.com/w40/us.png" alt="">
-            <span id="langSelectLabel">English</span>
+        <div class="search-wrapper">
+          <div class="search-input-row">
+            <span class="search-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+            </span>
+            <input type="text" id="searchInput" placeholder="Artist, song title, or both…" autocomplete="off"
+              spellcheck="false">
+            <button class="clear-btn" id="clearBtn" type="button" title="Clear">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div class="dropdown" id="dropdown"></div>
+        </div>
+      </div>
+
+      <!-- PLAYLIST PANEL -->
+      <div class="playlist-panel" id="panel-playlist">
+        <div class="card-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M3 6h18M3 12h18M3 18h12" />
+          </svg>
+          Import Playlist
+        </div>
+        <div class="playlist-url-row">
+          <div class="playlist-url-input-wrap">
+            <span class="search-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+              </svg>
+            </span>
+            <input type="text" id="playlistUrl" placeholder="Paste a public Spotify or Apple Music playlist URL…">
+          </div>
+          <button class="import-btn" id="importBtn" onclick="importPlaylist()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Import
           </button>
-          <div class="lang-select-dropdown" id="langSelectDropdown"></div>
+        </div>
+        <p class="playlist-hint">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v4M12 16h.01" />
+          </svg>
+          Playlist must be set to public. Works with Spotify and Apple Music.
+        </p>
+        <div class="track-list" id="trackList">
+          <div class="track-list-header">
+            <span class="track-list-title" id="trackListTitle">Tracks</span>
+            <span class="track-count" id="trackCount"></span>
+          </div>
+          <div class="track-items" id="trackItems"></div>
         </div>
       </div>
-      <button class="translate-btn" id="translateBtn" disabled>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        Translate
-      </button>
-    </div>
-  </div>
 
-  <div class="status-bar" id="statusBar">
-    <div class="spinner"></div>
-    <span id="statusText">Fetching lyrics…</span>
-  </div>
-
-  <div class="error-bar" id="errorBar">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-    <span id="errorText"></span>
-  </div>
-
-  <div class="result-card" id="resultCard">
-    <div class="result-header">
-      <div>
-        <div class="result-song-title" id="resultTitle"></div>
-        <div class="result-song-artist" id="resultArtist"></div>
-      </div>
-      <div class="result-badges">
-        <div class="lang-badge">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
-          <span id="langBadgeText"></span>
+      <!-- Language + Translate -->
+      <div class="controls-row">
+        <div class="field-group">
+          <div class="card-label" style="margin-bottom:8px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" />
+            </svg>
+            Translate To
+          </div>
+          <select id="targetLang" style="display:none;"></select>
+          <div class="lang-select-wrapper" id="langSelectWrapper">
+            <button type="button" class="lang-select-trigger" id="langSelectTrigger">
+              <img class="lang-flag" id="langSelectFlag" src="https://flagcdn.com/w40/us.png" alt="">
+              <span id="langSelectLabel">English</span>
+            </button>
+            <div class="lang-select-dropdown" id="langSelectDropdown"></div>
+          </div>
         </div>
-        <div class="cache-badge" id="cacheBadge" style="display:none;">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          Cached
-        </div>
+        <button class="translate-btn" id="translateBtn" disabled>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+          Translate
+        </button>
       </div>
     </div>
-    <div class="col-header-row">
-      <div class="col-header" id="colOriginal">Original</div>
-      <div class="col-header" id="colTranslated" style="text-align: right;">Translation</div>
+
+    <div class="status-bar" id="statusBar">
+      <div class="spinner"></div>
+      <span id="statusText">Fetching lyrics…</span>
     </div>
-    <div class="lyrics-rows" id="lyricsRows"></div>
-  </div>
-</main>
 
-<footer>
-  Content is provided for personal, educational use only. Lyrics remain the property of their respective copyright holders.
-  <br>
-  For copyright concerns or DMCA takedown requests: <a href="/cdn-cgi/l/email-protection#c0aabaacafb4aea9b4b3abb980a7ada1a9aceea3afad" style="color:var(--ink-light);text-decoration:underline;"><span class="__cf_email__" data-cfemail="78120214170c16110c0b1301381f15191114561b1715">[email&#160;protected]</span></a>
-</footer>
+    <div class="error-bar" id="errorBar">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 8v4M12 16h.01" />
+      </svg>
+      <span id="errorText"></span>
+    </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  const RTL_LANGUAGES = new Set(['Hebrew', 'Arabic']);
-  let selectedSong = null, searchTimer = null;
+    <div class="result-card" id="resultCard">
+      <div class="result-header">
+        <div>
+          <div class="result-song-title" id="resultTitle"></div>
+          <div class="result-song-artist" id="resultArtist"></div>
+        </div>
+        <div class="result-badges">
+          <div class="lang-badge">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" />
+            </svg>
+            <span id="langBadgeText"></span>
+          </div>
+          <div class="cache-badge" id="cacheBadge" style="display:none;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+            </svg>
+            Cached
+          </div>
+        </div>
+      </div>
+      <div class="col-header-row">
+        <div class="col-header" id="colOriginal">Original</div>
+        <div class="col-header" id="colTranslated" style="text-align: right;">Translation</div>
+      </div>
+      <div class="lyrics-rows" id="lyricsRows"></div>
+    </div>
+  </main>
 
-  const searchInput  = document.getElementById('searchInput');
-  const clearBtn     = document.getElementById('clearBtn');
-  const dropdown     = document.getElementById('dropdown');
-  const translateBtn = document.getElementById('translateBtn');
-  const statusBar    = document.getElementById('statusBar');
-  const statusText   = document.getElementById('statusText');
-  const errorBar     = document.getElementById('errorBar');
-  const errorTextEl  = document.getElementById('errorText');
-  const resultCard   = document.getElementById('resultCard');
-  const lyricsRows   = document.getElementById('lyricsRows');
+  <footer>
+    Content is provided for personal, educational use only. Lyrics remain the property of their respective copyright
+    holders.
+    <br>
+    For copyright concerns or DMCA takedown requests: <a
+      href="/cdn-cgi/l/email-protection#c0aabaacafb4aea9b4b3abb980a7ada1a9aceea3afad"
+      style="color:var(--ink-light);text-decoration:underline;"><span class="__cf_email__"
+        data-cfemail="78120214170c16110c0b1301381f15191114561b1715">[email&#160;protected]</span></a>
+  </footer>
 
-  function switchTab(name) {
-    document.getElementById('panel-search').classList.toggle('hidden', name !== 'search');
-    document.getElementById('panel-playlist').classList.toggle('active', name === 'playlist');
-    document.getElementById('tab-search-btn').classList.toggle('active', name === 'search');
-    document.getElementById('tab-playlist-btn').classList.toggle('active', name === 'playlist');
-  }
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script>
+    const RTL_LANGUAGES = new Set(['Hebrew', 'Arabic']);
+    let selectedSong = null, searchTimer = null;
 
-  searchInput.addEventListener('input', () => {
-    const q = searchInput.value.trim();
-    clearBtn.classList.toggle('visible', q.length > 0);
-    if (q.length < 2) { closeDropdown(); return; }
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => fetchSuggestions(q), 280);
-  });
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearBtn');
+    const dropdown = document.getElementById('dropdown');
+    const translateBtn = document.getElementById('translateBtn');
+    const statusBar = document.getElementById('statusBar');
+    const statusText = document.getElementById('statusText');
+    const errorBar = document.getElementById('errorBar');
+    const errorTextEl = document.getElementById('errorText');
+    const resultCard = document.getElementById('resultCard');
+    const lyricsRows = document.getElementById('lyricsRows');
 
-  async function fetchSuggestions(q) {
-    try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-      renderDropdown(await res.json());
-    } catch { closeDropdown(); }
-  }
-
-  function renderDropdown(songs) {
-    dropdown.innerHTML = '';
-    if (!songs.length) { closeDropdown(); return; }
-    songs.forEach(song => {
-      const el = document.createElement('div');
-      el.className = 'ac-item';
-      const thumbHTML = song.thumbnail
-        ? `<img class="ac-thumb" src="${esc(song.thumbnail)}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-           <div class="ac-thumb-placeholder" style="display:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>`
-        : `<div class="ac-thumb-placeholder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>`;
-      el.innerHTML = `${thumbHTML}<div class="ac-text"><div class="ac-title">${esc(song.title)}</div><div class="ac-artist">${esc(song.artist)}</div></div>`;
-      el.addEventListener('click', () => selectSong(song));
-      dropdown.appendChild(el);
-    });
-    dropdown.classList.add('open');
-  }
-
-  function selectSong(song) {
-    selectedSong = song;
-    searchInput.value = `${song.title} — ${song.artist}`;
-    clearBtn.classList.add('visible');
-    closeDropdown();
-    translateBtn.disabled = false;
-    translateBtn.focus();
-  }
-
-  clearBtn.addEventListener('click', () => {
-    searchInput.value = '';
-    clearBtn.classList.remove('visible');
-    selectedSong = null;
-    translateBtn.disabled = true;
-    closeDropdown();
-    searchInput.focus();
-  });
-
-  function closeDropdown() { dropdown.classList.remove('open'); dropdown.innerHTML = ''; }
-
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.search-wrapper')) closeDropdown();
-    if (!e.target.closest('#langSelectWrapper')) document.getElementById('langSelectWrapper').classList.remove('open');
-  });
-
-  async function importPlaylist() {
-    const url = document.getElementById('playlistUrl').value.trim();
-    if (!url) return;
-    const isSpotify = url.includes('spotify.com');
-    const isApple   = url.includes('music.apple.com');
-    if (!isSpotify && !isApple) { showError('Please paste a Spotify or Apple Music playlist URL.'); return; }
-
-    const btn = document.getElementById('importBtn');
-    btn.disabled = true;
-    btn.innerHTML = `<div class="spinner" style="width:13px;height:13px;border-width:2px;border-top-color:#fff;border-color:rgba(255,255,255,0.3)"></div> Loading…`;
-    errorBar.classList.remove('visible');
-
-    try {
-      const res  = await fetch(`${isSpotify ? '/api/playlist/spotify' : '/api/playlist/apple'}?url=${encodeURIComponent(url)}`);
-      const data = await res.json();
-      if (data.error) { showError(data.error); return; }
-      renderTrackList(data.tracks, isSpotify ? 'Spotify' : 'Apple Music');
-    } catch { showError('Could not fetch playlist. Please check the URL and try again.'); }
-    finally {
-      btn.disabled = false;
-      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Import`;
+    function switchTab(name) {
+      document.getElementById('panel-search').classList.toggle('hidden', name !== 'search');
+      document.getElementById('panel-playlist').classList.toggle('active', name === 'playlist');
+      document.getElementById('tab-search-btn').classList.toggle('active', name === 'search');
+      document.getElementById('tab-playlist-btn').classList.toggle('active', name === 'playlist');
     }
-  }
 
-  function renderTrackList(tracks, source) {
-    document.getElementById('trackListTitle').textContent = source + ' Playlist';
-    document.getElementById('trackCount').textContent = tracks.length + ' tracks';
-    document.getElementById('trackList').classList.add('visible');
-    const container = document.getElementById('trackItems');
-    container.innerHTML = '';
-    tracks.forEach(track => {
-      const el = document.createElement('div');
-      el.className = 'track-item';
-      el.innerHTML = `
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.trim();
+      clearBtn.classList.toggle('visible', q.length > 0);
+      if (q.length < 2) { closeDropdown(); return; }
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => fetchSuggestions(q), 280);
+    });
+
+    async function fetchSuggestions(q) {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+        renderDropdown(await res.json());
+      } catch { closeDropdown(); }
+    }
+
+    function renderDropdown(songs) {
+      dropdown.innerHTML = '';
+      if (!songs.length) { closeDropdown(); return; }
+      songs.forEach(song => {
+        const el = document.createElement('div');
+        el.className = 'ac-item';
+        const thumbHTML = song.thumbnail
+          ? `<img class="ac-thumb" src="${esc(song.thumbnail)}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+           <div class="ac-thumb-placeholder" style="display:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>`
+          : `<div class="ac-thumb-placeholder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>`;
+        el.innerHTML = `${thumbHTML}<div class="ac-text"><div class="ac-title">${esc(song.title)}</div><div class="ac-artist">${esc(song.artist)}</div></div>`;
+        el.addEventListener('click', () => selectSong(song));
+        dropdown.appendChild(el);
+      });
+      dropdown.classList.add('open');
+    }
+
+    function selectSong(song) {
+      selectedSong = song;
+      searchInput.value = `${song.title} — ${song.artist}`;
+      clearBtn.classList.add('visible');
+      closeDropdown();
+      translateBtn.disabled = false;
+      translateBtn.focus();
+    }
+
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      clearBtn.classList.remove('visible');
+      selectedSong = null;
+      translateBtn.disabled = true;
+      closeDropdown();
+      searchInput.focus();
+    });
+
+    function closeDropdown() { dropdown.classList.remove('open'); dropdown.innerHTML = ''; }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.search-wrapper')) closeDropdown();
+      if (!e.target.closest('#langSelectWrapper')) document.getElementById('langSelectWrapper').classList.remove('open');
+    });
+
+    async function importPlaylist() {
+      const url = document.getElementById('playlistUrl').value.trim();
+      if (!url) return;
+      const isSpotify = url.includes('spotify.com');
+      const isApple = url.includes('music.apple.com');
+      if (!isSpotify && !isApple) { showError('Please paste a Spotify or Apple Music playlist URL.'); return; }
+
+      const btn = document.getElementById('importBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner" style="width:13px;height:13px;border-width:2px;border-top-color:#fff;border-color:rgba(255,255,255,0.3)"></div> Loading…`;
+      errorBar.classList.remove('visible');
+
+      try {
+        const res = await fetch(`${isSpotify ? '/api/playlist/spotify' : '/api/playlist/apple'}?url=${encodeURIComponent(url)}`);
+        const data = await res.json();
+        if (data.error) { showError(data.error); return; }
+        renderTrackList(data.tracks, isSpotify ? 'Spotify' : 'Apple Music');
+      } catch { showError('Could not fetch playlist. Please check the URL and try again.'); }
+      finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Import`;
+      }
+    }
+
+    function renderTrackList(tracks, source) {
+      document.getElementById('trackListTitle').textContent = source + ' Playlist';
+      document.getElementById('trackCount').textContent = tracks.length + ' tracks';
+      document.getElementById('trackList').classList.add('visible');
+      const container = document.getElementById('trackItems');
+      container.innerHTML = '';
+      tracks.forEach(track => {
+        const el = document.createElement('div');
+        el.className = 'track-item';
+        el.innerHTML = `
         ${track.thumbnail ? `<img class="track-thumb" src="${esc(track.thumbnail)}" alt="" loading="lazy">` : `<div class="track-thumb-placeholder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>`}
         <div class="track-info"><div class="track-title">${esc(track.title)}</div><div class="track-artist">${esc(track.artist)}</div></div>
         <svg class="track-select-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
-      el.addEventListener('click', () => {
-        document.querySelectorAll('.track-item').forEach(t => t.classList.remove('selected'));
-        el.classList.add('selected');
-        selectSong({ title: track.title, artist: track.artist, thumbnail: track.thumbnail });
-        searchInput.value = `${track.title} — ${track.artist}`;
+        el.addEventListener('click', () => {
+          document.querySelectorAll('.track-item').forEach(t => t.classList.remove('selected'));
+          el.classList.add('selected');
+          selectSong({ title: track.title, artist: track.artist, thumbnail: track.thumbnail });
+          searchInput.value = `${track.title} — ${track.artist}`;
+        });
+        container.appendChild(el);
       });
-      container.appendChild(el);
-    });
-  }
+    }
 
-  translateBtn.addEventListener('click', runTranslation);
+    translateBtn.addEventListener('click', runTranslation);
 
-  async function runTranslation() {
-    if (!selectedSong) return;
-    const targetLang = document.getElementById('targetLang').value;
-    translateBtn.disabled = true;
-    statusText.textContent = 'Fetching lyrics…';
-    statusBar.classList.add('visible');
-    errorBar.classList.remove('visible');
-    resultCard.classList.remove('visible');
-    document.getElementById('cacheBadge').style.display = 'none';
+    async function runTranslation() {
+      if (!selectedSong) return;
+      const targetLang = document.getElementById('targetLang').value;
+      translateBtn.disabled = true;
+      statusText.textContent = 'Fetching lyrics…';
+      statusBar.classList.add('visible');
+      errorBar.classList.remove('visible');
+      resultCard.classList.remove('visible');
+      document.getElementById('cacheBadge').style.display = 'none';
 
-    try {
-      const lr = await fetch(`/api/lyrics?artist=${encodeURIComponent(selectedSong.artist)}&title=${encodeURIComponent(selectedSong.title)}`);
-      const ld = await lr.json();
-      if (ld.error) throw new Error(ld.error);
-      statusText.textContent = ld.fromCache ? 'Lyrics from cache. Translating…' : 'Lyrics fetched. Translating…';
-      const tr = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lyrics: ld.lyrics, targetLanguage: targetLang, artist: selectedSong.artist, title: selectedSong.title })
+      try {
+        const lr = await fetch(`/api/lyrics?artist=${encodeURIComponent(selectedSong.artist)}&title=${encodeURIComponent(selectedSong.title)}`);
+        const ld = await lr.json();
+        if (ld.error) throw new Error(ld.error);
+        statusText.textContent = ld.fromCache ? 'Lyrics from cache. Translating…' : 'Lyrics fetched. Translating…';
+        const tr = await fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lyrics: ld.lyrics, targetLanguage: targetLang, artist: selectedSong.artist, title: selectedSong.title })
+        });
+        const td = await tr.json();
+        if (td.error) throw new Error(td.error);
+        renderResult(td, targetLang, td.fromCache);
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        statusBar.classList.remove('visible');
+        translateBtn.disabled = false;
+      }
+    }
+
+    function renderResult(data, targetLang, fromCache) {
+      const isTargetRTL = RTL_LANGUAGES.has(targetLang);
+      const isSourceRTL = RTL_LANGUAGES.has(data.sourceLanguage);
+      document.getElementById('resultTitle').textContent = selectedSong.title;
+      document.getElementById('resultArtist').textContent = selectedSong.artist;
+      document.getElementById('langBadgeText').textContent = `${data.sourceLanguage} → ${targetLang}`;
+      document.getElementById('colOriginal').textContent = data.sourceLanguage;
+      document.getElementById('colTranslated').textContent = targetLang;
+      document.getElementById('cacheBadge').style.display = fromCache ? 'flex' : 'none';
+      lyricsRows.innerHTML = '';
+      data.lines.forEach(line => {
+        const row = document.createElement('div');
+        if (!line.original && !line.translated) {
+          row.className = 'lyric-row blank';
+          row.innerHTML = '<div class="lyric-cell original"></div><div class="lyric-cell translated"></div>';
+        } else {
+          row.className = 'lyric-row';
+          const o = document.createElement('div'); o.className = 'lyric-cell original'; o.textContent = line.original; if (isSourceRTL) o.setAttribute('dir', 'rtl');
+          const t = document.createElement('div'); t.className = 'lyric-cell translated'; t.textContent = line.translated; if (isTargetRTL) t.setAttribute('dir', 'rtl');
+          row.appendChild(o); row.appendChild(t);
+        }
+        lyricsRows.appendChild(row);
       });
-      const td = await tr.json();
-      if (td.error) throw new Error(td.error);
-      renderResult(td, targetLang, td.fromCache);
-    } catch (err) {
-      showError(err.message);
-    } finally {
-      statusBar.classList.remove('visible');
-      translateBtn.disabled = false;
+      resultCard.classList.add('visible');
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      loadYoutubeEmbed(selectedSong.title, selectedSong.artist);
     }
-  }
 
-  function renderResult(data, targetLang, fromCache) {
-    const isTargetRTL = RTL_LANGUAGES.has(targetLang);
-    const isSourceRTL = RTL_LANGUAGES.has(data.sourceLanguage);
-    document.getElementById('resultTitle').textContent   = selectedSong.title;
-    document.getElementById('resultArtist').textContent  = selectedSong.artist;
-    document.getElementById('langBadgeText').textContent = `${data.sourceLanguage} → ${targetLang}`;
-    document.getElementById('colOriginal').textContent   = data.sourceLanguage;
-    document.getElementById('colTranslated').textContent = targetLang;
-    document.getElementById('cacheBadge').style.display  = fromCache ? 'flex' : 'none';
-    lyricsRows.innerHTML = '';
-    data.lines.forEach(line => {
-      const row = document.createElement('div');
-      if (!line.original && !line.translated) {
-        row.className = 'lyric-row blank';
-        row.innerHTML = '<div class="lyric-cell original"></div><div class="lyric-cell translated"></div>';
-      } else {
-        row.className = 'lyric-row';
-        const o = document.createElement('div'); o.className = 'lyric-cell original'; o.textContent = line.original; if (isSourceRTL) o.setAttribute('dir','rtl');
-        const t = document.createElement('div'); t.className = 'lyric-cell translated'; t.textContent = line.translated; if (isTargetRTL) t.setAttribute('dir','rtl');
-        row.appendChild(o); row.appendChild(t);
+    function showError(msg) { errorTextEl.textContent = msg; errorBar.classList.add('visible'); }
+
+    async function loadYoutubeEmbed(title, artist) {
+      const section = document.getElementById('youtubeSection');
+      const iframe = document.getElementById('youtubeIframe');
+      // Reset and hide while fetching
+      section.classList.remove('visible');
+      iframe.src = '';
+      try {
+        const res = await fetch(`/api/youtube?title=${encodeURIComponent(title)}&artist=${encodeURIComponent(artist)}`);
+        const data = await res.json();
+        if (data.videoId) {
+          iframe.src = `https://www.youtube-nocookie.com/embed/${data.videoId}?rel=0&modestbranding=1`;
+          section.classList.add('visible');
+          section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      } catch {
+        // silently skip — YouTube is a nice-to-have, not critical
       }
-      lyricsRows.appendChild(row);
+    }
+
+    const LANGUAGES = [
+      { value: 'English', label: 'English', native: 'English', cc: 'us' },
+      { value: 'Hebrew', label: 'Hebrew', native: 'עברית', cc: 'il' },
+      { value: 'Spanish', label: 'Spanish', native: 'Español', cc: 'es' },
+      { value: 'French', label: 'French', native: 'Français', cc: 'fr' },
+      { value: 'German', label: 'German', native: 'Deutsch', cc: 'de' },
+      { value: 'Italian', label: 'Italian', native: 'Italiano', cc: 'it' },
+      { value: 'Portuguese', label: 'Portuguese', native: 'Português', cc: 'pt' },
+      { value: 'Japanese', label: 'Japanese', native: '日本語', cc: 'jp' },
+      { value: 'Korean', label: 'Korean', native: '한국어', cc: 'kr' },
+      { value: 'Mandarin Chinese', label: 'Mandarin', native: '普通话', cc: 'cn' },
+      { value: 'Arabic', label: 'Arabic', native: 'العربية', cc: 'sa' },
+      { value: 'Russian', label: 'Russian', native: 'Русский', cc: 'ru' },
+      { value: 'Hindi', label: 'Hindi', native: 'हिन्दी', cc: 'in' },
+      { value: 'Dutch', label: 'Dutch', native: 'Nederlands', cc: 'nl' },
+      { value: 'Swedish', label: 'Swedish', native: 'Svenska', cc: 'se' },
+      { value: 'Turkish', label: 'Turkish', native: 'Türkçe', cc: 'tr' },
+      { value: 'Polish', label: 'Polish', native: 'Polski', cc: 'pl' },
+    ];
+
+    const langWrapper = document.getElementById('langSelectWrapper');
+    const langTrigger = document.getElementById('langSelectTrigger');
+    const langFlag = document.getElementById('langSelectFlag');
+    const langLabel = document.getElementById('langSelectLabel');
+    const langDrop = document.getElementById('langSelectDropdown');
+    const targetLangEl = document.getElementById('targetLang');
+
+    LANGUAGES.forEach(lang => {
+      const opt = document.createElement('option'); opt.value = lang.value; opt.textContent = lang.label; targetLangEl.appendChild(opt);
+      const div = document.createElement('div');
+      div.className = 'lang-option' + (lang.value === 'English' ? ' selected' : '');
+      div.dataset.value = lang.value;
+      div.innerHTML = `<img class="lang-flag" src="https://flagcdn.com/w40/${lang.cc}.png" alt="${lang.cc}" loading="lazy"><span>${lang.label}</span><span style="color:var(--ink-light);font-size:0.82rem;margin-left:4px;">${lang.native}</span>`;
+      div.addEventListener('click', () => { selectLang(lang); langWrapper.classList.remove('open'); });
+      langDrop.appendChild(div);
     });
-    resultCard.classList.add('visible');
-    resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    loadYoutubeEmbed(selectedSong.title, selectedSong.artist);
-  }
 
-  function showError(msg) { errorTextEl.textContent = msg; errorBar.classList.add('visible'); }
-
-  async function loadYoutubeEmbed(title, artist) {
-    const section = document.getElementById('youtubeSection');
-    const iframe  = document.getElementById('youtubeIframe');
-    // Reset and hide while fetching
-    section.classList.remove('visible');
-    iframe.src = '';
-    try {
-      const res = await fetch(`/api/youtube?title=${encodeURIComponent(title)}&artist=${encodeURIComponent(artist)}`);
-      const data = await res.json();
-      if (data.videoId) {
-        iframe.src = `https://www.youtube-nocookie.com/embed/${data.videoId}?rel=0&modestbranding=1`;
-        section.classList.add('visible');
-        section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-    } catch {
-      // silently skip — YouTube is a nice-to-have, not critical
+    function selectLang(lang) {
+      langFlag.src = `https://flagcdn.com/w40/${lang.cc}.png`; langFlag.alt = lang.cc;
+      langLabel.textContent = `${lang.label} — ${lang.native}`;
+      targetLangEl.value = lang.value;
+      langDrop.querySelectorAll('.lang-option').forEach(el => el.classList.toggle('selected', el.dataset.value === lang.value));
     }
-  }
 
-  const LANGUAGES = [
-    { value: 'English',          label: 'English',    native: 'English',    cc: 'us' },
-    { value: 'Hebrew',           label: 'Hebrew',     native: 'עברית',      cc: 'il' },
-    { value: 'Spanish',          label: 'Spanish',    native: 'Español',    cc: 'es' },
-    { value: 'French',           label: 'French',     native: 'Français',   cc: 'fr' },
-    { value: 'German',           label: 'German',     native: 'Deutsch',    cc: 'de' },
-    { value: 'Italian',          label: 'Italian',    native: 'Italiano',   cc: 'it' },
-    { value: 'Portuguese',       label: 'Portuguese', native: 'Português',  cc: 'pt' },
-    { value: 'Japanese',         label: 'Japanese',   native: '日本語',      cc: 'jp' },
-    { value: 'Korean',           label: 'Korean',     native: '한국어',      cc: 'kr' },
-    { value: 'Mandarin Chinese', label: 'Mandarin',   native: '普通话',      cc: 'cn' },
-    { value: 'Arabic',           label: 'Arabic',     native: 'العربية',    cc: 'sa' },
-    { value: 'Russian',          label: 'Russian',    native: 'Русский',    cc: 'ru' },
-    { value: 'Hindi',            label: 'Hindi',      native: 'हिन्दी',     cc: 'in' },
-    { value: 'Dutch',            label: 'Dutch',      native: 'Nederlands', cc: 'nl' },
-    { value: 'Swedish',          label: 'Swedish',    native: 'Svenska',    cc: 'se' },
-    { value: 'Turkish',          label: 'Turkish',    native: 'Türkçe',     cc: 'tr' },
-    { value: 'Polish',           label: 'Polish',     native: 'Polski',     cc: 'pl' },
-  ];
+    langTrigger.addEventListener('click', e => { e.stopPropagation(); langWrapper.classList.toggle('open'); });
 
-  const langWrapper = document.getElementById('langSelectWrapper');
-  const langTrigger = document.getElementById('langSelectTrigger');
-  const langFlag    = document.getElementById('langSelectFlag');
-  const langLabel   = document.getElementById('langSelectLabel');
-  const langDrop    = document.getElementById('langSelectDropdown');
-  const targetLangEl= document.getElementById('targetLang');
+    function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
-  LANGUAGES.forEach(lang => {
-    const opt = document.createElement('option'); opt.value = lang.value; opt.textContent = lang.label; targetLangEl.appendChild(opt);
-    const div = document.createElement('div');
-    div.className = 'lang-option' + (lang.value === 'English' ? ' selected' : '');
-    div.dataset.value = lang.value;
-    div.innerHTML = `<img class="lang-flag" src="https://flagcdn.com/w40/${lang.cc}.png" alt="${lang.cc}" loading="lazy"><span>${lang.label}</span><span style="color:var(--ink-light);font-size:0.82rem;margin-left:4px;">${lang.native}</span>`;
-    div.addEventListener('click', () => { selectLang(lang); langWrapper.classList.remove('open'); });
-    langDrop.appendChild(div);
-  });
+    // ── Featured Today ────────────────────────────────────────────
+    async function loadFeatured() {
+      try {
+        const res = await fetch('/api/featured');
+        const data = await res.json();
+        const grid = document.getElementById('featuredGrid');
 
-  function selectLang(lang) {
-    langFlag.src = `https://flagcdn.com/w40/${lang.cc}.png`; langFlag.alt = lang.cc;
-    langLabel.textContent = `${lang.label} — ${lang.native}`;
-    targetLangEl.value = lang.value;
-    langDrop.querySelectorAll('.lang-option').forEach(el => el.classList.toggle('selected', el.dataset.value === lang.value));
-  }
+        if (!data.songs || data.songs.length === 0) {
+          document.getElementById('featuredSection').style.display = 'none';
+          return;
+        }
 
-  langTrigger.addEventListener('click', e => { e.stopPropagation(); langWrapper.classList.toggle('open'); });
-
-  function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-  // ── Featured Today ────────────────────────────────────────────
-  async function loadFeatured() {
-    try {
-      const res  = await fetch('/api/featured');
-      const data = await res.json();
-      const grid = document.getElementById('featuredGrid');
-
-      if (!data.songs || data.songs.length === 0) {
-        document.getElementById('featuredSection').style.display = 'none';
-        return;
-      }
-
-      const ranks = ['#1', '#2', '#3'];
-      grid.innerHTML = data.songs.map((song, i) => `
+        const ranks = ['#1', '#2', '#3'];
+        grid.innerHTML = data.songs.map((song, i) => `
         <div class="featured-card" onclick="featuredSelect('${esc(song.artist)}', '${esc(song.title)}')">
           <div class="featured-rank">${ranks[i]} Today</div>
           <div class="featured-title">${esc(song.title)}</div>
@@ -1144,21 +1594,22 @@
           </div>
         </div>
       `).join('');
-    } catch {
-      document.getElementById('featuredSection').style.display = 'none';
+      } catch {
+        document.getElementById('featuredSection').style.display = 'none';
+      }
     }
-  }
 
-  function featuredSelect(artist, title) {
-    selectSong({ title, artist, thumbnail: null });
-    searchInput.value = `${title} — ${artist}`;
-    // Switch to search tab and scroll to card
-    switchTab('search');
-    document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+    function featuredSelect(artist, title) {
+      selectSong({ title, artist, thumbnail: null });
+      searchInput.value = `${title} — ${artist}`;
+      // Switch to search tab and scroll to card
+      switchTab('search');
+      document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
-  loadFeatured();
+    loadFeatured();
 
-</script>
+  </script>
 </body>
+
 </html>
