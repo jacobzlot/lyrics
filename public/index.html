@@ -660,22 +660,6 @@
       color: var(--ink-light);
     }
 
-    .cache-badge {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.68rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent-hover);
-      background: var(--accent-light);
-      border: 1px solid #b8d9b4;
-      padding: 5px 11px;
-      border-radius: 100px;
-      white-space: nowrap;
-    }
-
     .col-header-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1077,6 +1061,116 @@
       height: 100%;
       border: none;
     }
+
+    /* ── UI Language Selector (header) ── */
+    .ui-lang-selector {
+      position: relative;
+    }
+
+    .ui-lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1px solid var(--rule);
+      border-radius: 100px;
+      padding: 5px 10px 5px 5px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      color: var(--ink-mid);
+    }
+
+    .ui-lang-btn:hover {
+      border-color: var(--ink-mid);
+      background: var(--surface);
+    }
+
+    .ui-lang-flag-sm {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--rule);
+    }
+
+    .ui-lang-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--white);
+      border: 1.5px solid var(--ink);
+      border-radius: 2px;
+      z-index: 400;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      max-height: 320px;
+      overflow-y: auto;
+      min-width: 210px;
+    }
+
+    .ui-lang-selector.open .ui-lang-dropdown {
+      display: block;
+    }
+
+    .ui-lang-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--rule);
+      font-size: 0.85rem;
+      color: var(--ink);
+      transition: background 0.1s;
+      white-space: nowrap;
+    }
+
+    .ui-lang-option:last-child {
+      border-bottom: none;
+    }
+
+    .ui-lang-option:hover {
+      background: var(--surface);
+    }
+
+    .ui-lang-option.active {
+      background: var(--accent-light);
+    }
+
+    /* ── RTL layout overrides ── */
+    [dir="rtl"] .logo-tagline {
+      border-left: none;
+      border-right: 1px solid var(--rule);
+      padding-left: 0;
+      padding-right: 12px;
+      margin-left: 0;
+      margin-right: 4px;
+    }
+
+    [dir="rtl"] .ui-lang-dropdown {
+      right: auto;
+      left: 0;
+    }
+
+    [dir="rtl"] .lang-select-trigger {
+      background-position: left 14px center;
+      padding: 11px 12px 11px 36px;
+      text-align: right;
+    }
+
+    [dir="rtl"] .card-tab {
+      margin-right: 0;
+      margin-left: 28px;
+    }
+
+    [dir="rtl"] #searchInput,
+    [dir="rtl"] #playlistUrl {
+      direction: rtl;
+      text-align: right;
+    }
   </style>
 </head>
 
@@ -1086,13 +1180,20 @@
     <div class="logo">
       <img src="/favicon.svg" alt="Shir" class="logo-icon">
       <span class="logo-text">Shir</span>
-      <span class="logo-tagline">Lyrics Translator</span>
+      <span class="logo-tagline" id="logoTagline">Lyrics Translator</span>
+    </div>
+    <div class="ui-lang-selector" id="uiLangSelector">
+      <button class="ui-lang-btn" id="uiLangBtn" aria-label="Interface language">
+        <img class="ui-lang-flag-sm" id="uiLangFlag" src="https://flagcdn.com/w40/us.png" alt="en">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="ui-lang-dropdown" id="uiLangDropdown"></div>
     </div>
   </header>
 
   <main>
-    <h1 class="page-title">Translate any song,<br><em>line by line.</em></h1>
-    <p class="page-subtitle">Search for a song or import a playlist, choose your language, and read along.</p>
+    <h1 class="page-title" id="pageTitle">Translate any song,<br><em>line by line.</em></h1>
+    <p class="page-subtitle" id="pageSubtitle">Search for a song or import a playlist, choose your language, and read along.</p>
 
 
     <!-- Featured Today -->
@@ -1103,7 +1204,7 @@
           <polygon
             points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
         </svg>
-        Featured Today
+        <span id="featuredLabelText">Featured Today</span>
       </div>
       <div class="featured-grid" id="featuredGrid">
         <!-- skeleton cards while loading -->
@@ -1132,7 +1233,7 @@
           <path
             d="M23 7s-.3-2-1.2-2.8c-1.1-1.2-2.4-1.2-3-1.3C16.2 2.8 12 2.8 12 2.8s-4.2 0-6.8.1c-.6.1-1.9.1-3 1.3C1.3 5 1 7 1 7S.7 9.1.7 11.2v2c0 2.1.3 4.2.3 4.2s.3 2 1.2 2.8c1.1 1.2 2.6 1.1 3.3 1.2C7.2 21.5 12 21.5 12 21.5s4.2 0 6.8-.2c.6-.1 1.9-.1 3-1.3.9-.8 1.2-2.8 1.2-2.8s.3-2.1.3-4.2v-2C23.3 9.1 23 7 23 7zM9.7 15V8.8l6.6 3.1-6.6 3.1z" />
         </svg>
-        Listen Along
+        <span id="listenAlongText">Listen Along</span>
       </div>
       <div class="youtube-frame-wrap">
         <iframe id="youtubeIframe"
@@ -1150,14 +1251,14 @@
             <circle cx="11" cy="11" r="8" />
             <path d="M21 21l-4.35-4.35" />
           </svg>
-          Search
+          <span id="tabSearchText">Search</span>
         </button>
         <button class="card-tab" id="tab-playlist-btn" onclick="switchTab('playlist')">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
             style="display:inline;vertical-align:middle;margin-right:5px">
             <path d="M3 6h18M3 12h18M3 18h12" />
           </svg>
-          Import Playlist
+          <span id="tabPlaylistText">Import Playlist</span>
         </button>
       </div>
 
@@ -1168,7 +1269,7 @@
             <circle cx="11" cy="11" r="8" />
             <path d="M21 21l-4.35-4.35" />
           </svg>
-          Find a Song
+          <span id="findSongText">Find a Song</span>
         </div>
         <div class="search-wrapper">
           <div class="search-input-row">
@@ -1198,7 +1299,7 @@
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path d="M3 6h18M3 12h18M3 18h12" />
           </svg>
-          Import Playlist
+          <span id="importPlaylistText">Import Playlist</span>
         </div>
         <div class="playlist-url-row">
           <div class="playlist-url-input-wrap">
@@ -1218,7 +1319,7 @@
               <polyline points="7 10 12 15 17 10" />
               <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
-            Import
+            <span id="importBtnText">Import</span>
           </button>
         </div>
         <p class="playlist-hint">
@@ -1227,7 +1328,7 @@
             <circle cx="12" cy="12" r="10" />
             <path d="M12 8v4M12 16h.01" />
           </svg>
-          Playlist must be set to public. Works with Spotify and Apple Music.
+          <span id="playlistHintText">Playlist must be set to public. Works with Spotify and Apple Music.</span>
         </p>
         <div class="track-list" id="trackList">
           <div class="track-list-header">
@@ -1246,7 +1347,7 @@
               <circle cx="12" cy="12" r="10" />
               <path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" />
             </svg>
-            Translate To
+            <span id="translateToText">Translate To</span>
           </div>
           <select id="targetLang" style="display:none;"></select>
           <div class="lang-select-wrapper" id="langSelectWrapper">
@@ -1262,7 +1363,7 @@
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M5 12h14M12 5l7 7-7 7" />
           </svg>
-          Translate
+          <span id="translateBtnText">Translate</span>
         </button>
       </div>
     </div>
@@ -1295,13 +1396,6 @@
             </svg>
             <span id="langBadgeText"></span>
           </div>
-          <div class="cache-badge" id="cacheBadge" style="display:none;">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-              stroke-linecap="round">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-            </svg>
-            Cached
-          </div>
         </div>
       </div>
       <div class="col-header-row">
@@ -1313,10 +1407,9 @@
   </main>
 
   <footer>
-    Content is provided for personal, educational use only. Lyrics remain the property of their respective copyright
-    holders.
+    <span id="footerText">Content is provided for personal, educational use only. Lyrics remain the property of their respective copyright holders.</span>
     <br>
-    For copyright concerns or DMCA takedown requests: <a id="contact-link"
+    <span id="footerDmcaText">For copyright concerns or DMCA takedown requests:</span> <a id="contact-link"
       style="color:var(--ink-light);text-decoration:underline;"></a>
   </footer>
 
@@ -1343,6 +1436,345 @@
     const errorTextEl = document.getElementById('errorText');
     const resultCard = document.getElementById('resultCard');
     const lyricsRows = document.getElementById('lyricsRows');
+
+    // ── UI Translations ───────────────────────────────────────────
+    const UI_TRANSLATIONS = {
+      English: {
+        tagline: 'Lyrics Translator', title: 'Translate any song,', titleEm: 'line by line.',
+        subtitle: 'Search for a song or import a playlist, choose your language, and read along.',
+        featured: 'Featured Today', listenAlong: 'Listen Along',
+        tabSearch: 'Search', tabPlaylist: 'Import Playlist', findSong: 'Find a Song',
+        searchPlaceholder: 'Artist, song title, or both…', importPlaylist: 'Import Playlist',
+        playlistPlaceholder: 'Paste a public Spotify or Apple Music playlist URL…',
+        playlistHint: 'Playlist must be set to public. Works with Spotify and Apple Music.',
+        translateTo: 'Translate To', translateBtn: 'Translate', importBtn: 'Import',
+        statusFetching: 'Fetching lyrics…', statusTranslating: 'Lyrics fetched. Translating…',
+        today: 'Today', translationsToday: n => `${n} translation${n == 1 ? '' : 's'} today`,
+        tracks: n => `${n} tracks`, loading: 'Loading…',
+        footer: 'Content is provided for personal, educational use only. Lyrics remain the property of their respective copyright holders.',
+        footerDmca: 'For copyright concerns or DMCA takedown requests:',
+      },
+      Spanish: {
+        tagline: 'Traductor de Letras', title: 'Traduce cualquier canción,', titleEm: 'línea por línea.',
+        subtitle: 'Busca una canción o importa una lista, elige tu idioma y sigue la letra.',
+        featured: 'Destacado Hoy', listenAlong: 'Escuchar',
+        tabSearch: 'Buscar', tabPlaylist: 'Importar Lista', findSong: 'Buscar Canción',
+        searchPlaceholder: 'Artista, título o ambos…', importPlaylist: 'Importar Lista',
+        playlistPlaceholder: 'Pega una URL de lista pública de Spotify o Apple Music…',
+        playlistHint: 'La lista debe ser pública. Funciona con Spotify y Apple Music.',
+        translateTo: 'Traducir a', translateBtn: 'Traducir', importBtn: 'Importar',
+        statusFetching: 'Obteniendo letra…', statusTranslating: 'Letra obtenida. Traduciendo…',
+        today: 'Hoy', translationsToday: n => `${n} traducción${n == 1 ? '' : 'es'} hoy`,
+        tracks: n => `${n} canciones`, loading: 'Cargando…',
+        footer: 'El contenido se proporciona solo para uso personal y educativo. Las letras son propiedad de sus respectivos titulares de derechos de autor.',
+        footerDmca: 'Para inquietudes de derechos de autor o solicitudes DMCA:',
+      },
+      'Mandarin Chinese': {
+        tagline: '歌词翻译器', title: '翻译任何歌曲，', titleEm: '逐行翻译。',
+        subtitle: '搜索歌曲或导入播放列表，选择您的语言，跟随歌词。',
+        featured: '今日精选', listenAlong: '一起听',
+        tabSearch: '搜索', tabPlaylist: '导入播放列表', findSong: '查找歌曲',
+        searchPlaceholder: '艺术家、歌曲名称或两者…', importPlaylist: '导入播放列表',
+        playlistPlaceholder: '粘贴公开的 Spotify 或 Apple Music 播放列表链接…',
+        playlistHint: '播放列表必须设为公开。支持 Spotify 和 Apple Music。',
+        translateTo: '翻译为', translateBtn: '翻译', importBtn: '导入',
+        statusFetching: '正在获取歌词…', statusTranslating: '歌词已获取。正在翻译…',
+        today: '今日', translationsToday: n => `今日 ${n} 次翻译`,
+        tracks: n => `${n} 首`, loading: '加载中…',
+        footer: '内容仅供个人学习使用。歌词版权归其各自版权所有者所有。',
+        footerDmca: '如有版权问题或DMCA删除请求：',
+      },
+      Hindi: {
+        tagline: 'गीत अनुवादक', title: 'किसी भी गाने का अनुवाद करें,', titleEm: 'लाइन दर लाइन।',
+        subtitle: 'कोई गाना खोजें या प्लेलिस्ट आयात करें, अपनी भाषा चुनें, और साथ-साथ पढ़ें।',
+        featured: 'आज का विशेष', listenAlong: 'साथ सुनें',
+        tabSearch: 'खोजें', tabPlaylist: 'प्लेलिस्ट आयात करें', findSong: 'गाना खोजें',
+        searchPlaceholder: 'कलाकार, गाने का शीर्षक, या दोनों…', importPlaylist: 'प्लेलिस्ट आयात करें',
+        playlistPlaceholder: 'Spotify या Apple Music की सार्वजनिक प्लेलिस्ट URL पेस्ट करें…',
+        playlistHint: 'प्लेलिस्ट सार्वजनिक होनी चाहिए। Spotify और Apple Music के साथ काम करता है।',
+        translateTo: 'अनुवाद करें', translateBtn: 'अनुवाद करें', importBtn: 'आयात करें',
+        statusFetching: 'गीत प्राप्त हो रहे हैं…', statusTranslating: 'गीत प्राप्त हुए। अनुवाद हो रहा है…',
+        today: 'आज', translationsToday: n => `आज ${n} अनुवाद`,
+        tracks: n => `${n} ट्रैक`, loading: 'लोड हो रहा है…',
+        footer: 'सामग्री केवल व्यक्तिगत, शैक्षिक उपयोग के लिए है। गीत अपने संबंधित कॉपीराइट धारकों की संपत्ति हैं।',
+        footerDmca: 'कॉपीराइट संबंधी चिंताओं या DMCA अनुरोधों के लिए:',
+      },
+      French: {
+        tagline: 'Traducteur de Paroles', title: 'Traduisez n\'importe quelle chanson,', titleEm: 'ligne par ligne.',
+        subtitle: 'Recherchez une chanson ou importez une playlist, choisissez votre langue et lisez en suivant.',
+        featured: 'À la une aujourd\'hui', listenAlong: 'Écouter',
+        tabSearch: 'Rechercher', tabPlaylist: 'Importer une playlist', findSong: 'Trouver une chanson',
+        searchPlaceholder: 'Artiste, titre, ou les deux…', importPlaylist: 'Importer une playlist',
+        playlistPlaceholder: 'Collez l\'URL d\'une playlist publique Spotify ou Apple Music…',
+        playlistHint: 'La playlist doit être publique. Fonctionne avec Spotify et Apple Music.',
+        translateTo: 'Traduire en', translateBtn: 'Traduire', importBtn: 'Importer',
+        statusFetching: 'Récupération des paroles…', statusTranslating: 'Paroles récupérées. Traduction…',
+        today: 'Aujourd\'hui', translationsToday: n => `${n} traduction${n == 1 ? '' : 's'} aujourd'hui`,
+        tracks: n => `${n} pistes`, loading: 'Chargement…',
+        footer: 'Le contenu est fourni à des fins personnelles et éducatives uniquement. Les paroles restent la propriété de leurs détenteurs de droits respectifs.',
+        footerDmca: 'Pour les questions de droits d\'auteur ou demandes DMCA :',
+      },
+      Arabic: {
+        tagline: 'مترجم الأغاني', title: 'ترجم أي أغنية،', titleEm: 'سطرًا بسطر.',
+        subtitle: 'ابحث عن أغنية أو استورد قائمة تشغيل، اختر لغتك، واقرأ مع الأغنية.',
+        featured: 'مميز اليوم', listenAlong: 'استمع',
+        tabSearch: 'بحث', tabPlaylist: 'استيراد قائمة', findSong: 'ابحث عن أغنية',
+        searchPlaceholder: 'الفنان أو اسم الأغنية أو كليهما…', importPlaylist: 'استيراد قائمة تشغيل',
+        playlistPlaceholder: 'الصق رابط قائمة تشغيل عامة من Spotify أو Apple Music…',
+        playlistHint: 'يجب أن تكون قائمة التشغيل عامة. تعمل مع Spotify وApple Music.',
+        translateTo: 'ترجم إلى', translateBtn: 'ترجم', importBtn: 'استيراد',
+        statusFetching: 'جارٍ جلب الكلمات…', statusTranslating: 'تم جلب الكلمات. جارٍ الترجمة…',
+        today: 'اليوم', translationsToday: n => `${n} ترجمة اليوم`,
+        tracks: n => `${n} مقاطع`, loading: 'جارٍ التحميل…',
+        footer: 'يُقدَّم المحتوى للاستخدام الشخصي والتعليمي فقط. كلمات الأغاني ملك لأصحاب حقوق الطبع والنشر.',
+        footerDmca: 'لمخاوف حقوق الطبع والنشر أو طلبات إزالة DMCA:',
+      },
+      Russian: {
+        tagline: 'Переводчик текстов', title: 'Переводи любую песню,', titleEm: 'строка за строкой.',
+        subtitle: 'Найдите песню или импортируйте плейлист, выберите язык и читайте вместе.',
+        featured: 'Сегодня в тренде', listenAlong: 'Слушать',
+        tabSearch: 'Поиск', tabPlaylist: 'Импорт плейлиста', findSong: 'Найти песню',
+        searchPlaceholder: 'Исполнитель, название или оба…', importPlaylist: 'Импорт плейлиста',
+        playlistPlaceholder: 'Вставьте URL публичного плейлиста Spotify или Apple Music…',
+        playlistHint: 'Плейлист должен быть публичным. Работает со Spotify и Apple Music.',
+        translateTo: 'Перевести на', translateBtn: 'Перевести', importBtn: 'Импорт',
+        statusFetching: 'Загрузка текста…', statusTranslating: 'Текст загружен. Перевод…',
+        today: 'Сегодня', translationsToday: n => `${n} перевод${n == 1 ? '' : n < 5 ? 'а' : 'ов'} сегодня`,
+        tracks: n => `${n} треков`, loading: 'Загрузка…',
+        footer: 'Контент предоставляется только для личного образовательного использования. Тексты песен являются собственностью их правообладателей.',
+        footerDmca: 'По вопросам авторских прав или DMCA-запросам:',
+      },
+      Portuguese: {
+        tagline: 'Tradutor de Letras', title: 'Traduza qualquer música,', titleEm: 'linha por linha.',
+        subtitle: 'Pesquise uma música ou importe uma playlist, escolha seu idioma e acompanhe.',
+        featured: 'Destaque Hoje', listenAlong: 'Ouvir',
+        tabSearch: 'Pesquisar', tabPlaylist: 'Importar Playlist', findSong: 'Encontrar uma Música',
+        searchPlaceholder: 'Artista, título ou ambos…', importPlaylist: 'Importar Playlist',
+        playlistPlaceholder: 'Cole o URL de uma playlist pública do Spotify ou Apple Music…',
+        playlistHint: 'A playlist deve ser pública. Funciona com Spotify e Apple Music.',
+        translateTo: 'Traduzir para', translateBtn: 'Traduzir', importBtn: 'Importar',
+        statusFetching: 'Buscando letra…', statusTranslating: 'Letra encontrada. Traduzindo…',
+        today: 'Hoje', translationsToday: n => `${n} tradução${n == 1 ? '' : 'ões'} hoje`,
+        tracks: n => `${n} faixas`, loading: 'Carregando…',
+        footer: 'O conteúdo é fornecido apenas para uso pessoal e educacional. As letras permanecem propriedade de seus respectivos detentores de direitos autorais.',
+        footerDmca: 'Para questões de direitos autorais ou pedidos de remoção DMCA:',
+      },
+      German: {
+        tagline: 'Liedtext-Übersetzer', title: 'Übersetze jeden Song,', titleEm: 'Zeile für Zeile.',
+        subtitle: 'Suche einen Song oder importiere eine Playlist, wähle deine Sprache und lies mit.',
+        featured: 'Heute im Fokus', listenAlong: 'Mithören',
+        tabSearch: 'Suchen', tabPlaylist: 'Playlist importieren', findSong: 'Song finden',
+        searchPlaceholder: 'Künstler, Songtitel oder beides…', importPlaylist: 'Playlist importieren',
+        playlistPlaceholder: 'Öffentliche Spotify- oder Apple Music-Playlist-URL einfügen…',
+        playlistHint: 'Die Playlist muss öffentlich sein. Funktioniert mit Spotify und Apple Music.',
+        translateTo: 'Übersetzen in', translateBtn: 'Übersetzen', importBtn: 'Importieren',
+        statusFetching: 'Liedtext wird abgerufen…', statusTranslating: 'Text abgerufen. Übersetze…',
+        today: 'Heute', translationsToday: n => `${n} Übersetzung${n == 1 ? '' : 'en'} heute`,
+        tracks: n => `${n} Titel`, loading: 'Laden…',
+        footer: 'Inhalte werden ausschließlich für den persönlichen, bildungsbezogenen Gebrauch bereitgestellt. Liedtexte bleiben Eigentum ihrer jeweiligen Urheberrechtsinhaber.',
+        footerDmca: 'Bei Urheberrechtsfragen oder DMCA-Anfragen:',
+      },
+      Japanese: {
+        tagline: '歌詞翻訳', title: 'どんな曲も翻訳、', titleEm: '一行ずつ。',
+        subtitle: '曲を検索またはプレイリストをインポートし、言語を選んで歌詞と一緒に読みましょう。',
+        featured: '今日のおすすめ', listenAlong: '一緒に聴く',
+        tabSearch: '検索', tabPlaylist: 'プレイリストをインポート', findSong: '曲を探す',
+        searchPlaceholder: 'アーティスト、曲名、またはその両方…', importPlaylist: 'プレイリストをインポート',
+        playlistPlaceholder: 'SpotifyまたはApple MusicのパブリックプレイリストURLを貼り付け…',
+        playlistHint: 'プレイリストは公開設定にしてください。SpotifyとApple Musicに対応。',
+        translateTo: '翻訳先', translateBtn: '翻訳する', importBtn: 'インポート',
+        statusFetching: '歌詞を取得中…', statusTranslating: '歌詞を取得しました。翻訳中…',
+        today: '今日', translationsToday: n => `今日${n}回翻訳`,
+        tracks: n => `${n}曲`, loading: '読み込み中…',
+        footer: 'コンテンツは個人的・教育的利用のみを目的として提供されています。歌詞の著作権はそれぞれの権利者に帰属します。',
+        footerDmca: '著作権に関するお問い合わせやDMCA申請：',
+      },
+      Korean: {
+        tagline: '가사 번역기', title: '모든 노래를 번역하세요,', titleEm: '한 줄씩.',
+        subtitle: '노래를 검색하거나 플레이리스트를 가져오고, 언어를 선택하여 함께 읽어보세요.',
+        featured: '오늘의 추천', listenAlong: '함께 듣기',
+        tabSearch: '검색', tabPlaylist: '플레이리스트 가져오기', findSong: '노래 찾기',
+        searchPlaceholder: '아티스트, 노래 제목, 또는 둘 다…', importPlaylist: '플레이리스트 가져오기',
+        playlistPlaceholder: 'Spotify 또는 Apple Music 공개 플레이리스트 URL 붙여넣기…',
+        playlistHint: '플레이리스트는 공개로 설정해야 합니다. Spotify와 Apple Music 지원.',
+        translateTo: '번역 언어', translateBtn: '번역하기', importBtn: '가져오기',
+        statusFetching: '가사 불러오는 중…', statusTranslating: '가사를 불러왔습니다. 번역 중…',
+        today: '오늘', translationsToday: n => `오늘 ${n}회 번역`,
+        tracks: n => `${n}곡`, loading: '로딩 중…',
+        footer: '콘텐츠는 개인적, 교육적 목적으로만 제공됩니다. 가사는 해당 저작권자의 소유입니다.',
+        footerDmca: '저작권 문의 또는 DMCA 삭제 요청:',
+      },
+      Turkish: {
+        tagline: 'Şarkı Sözü Çevirici', title: 'Herhangi bir şarkıyı çevir,', titleEm: 'satır satır.',
+        subtitle: 'Bir şarkı ara veya çalma listesi içe aktar, dilini seç ve takip et.',
+        featured: 'Bugün Öne Çıkan', listenAlong: 'Birlikte Dinle',
+        tabSearch: 'Ara', tabPlaylist: 'Çalma Listesi Al', findSong: 'Şarkı Bul',
+        searchPlaceholder: 'Sanatçı, şarkı adı veya ikisi…', importPlaylist: 'Çalma Listesi Al',
+        playlistPlaceholder: 'Spotify veya Apple Music çalma listesi URL\'si yapıştır…',
+        playlistHint: 'Çalma listesi herkese açık olmalı. Spotify ve Apple Music ile çalışır.',
+        translateTo: 'Çeviri Dili', translateBtn: 'Çevir', importBtn: 'Al',
+        statusFetching: 'Şarkı sözleri alınıyor…', statusTranslating: 'Şarkı sözleri alındı. Çevriliyor…',
+        today: 'Bugün', translationsToday: n => `Bugün ${n} çeviri`,
+        tracks: n => `${n} parça`, loading: 'Yükleniyor…',
+        footer: 'İçerik yalnızca kişisel ve eğitim amaçlı sunulmaktadır. Şarkı sözleri ilgili telif hakkı sahiplerinin mülkiyetindedir.',
+        footerDmca: 'Telif hakkı sorunları veya DMCA kaldırma istekleri için:',
+      },
+      Italian: {
+        tagline: 'Traduttore di Testi', title: 'Traduci qualsiasi canzone,', titleEm: 'riga per riga.',
+        subtitle: 'Cerca una canzone o importa una playlist, scegli la tua lingua e leggi insieme.',
+        featured: 'In Evidenza Oggi', listenAlong: 'Ascolta',
+        tabSearch: 'Cerca', tabPlaylist: 'Importa Playlist', findSong: 'Trova una Canzone',
+        searchPlaceholder: 'Artista, titolo, o entrambi…', importPlaylist: 'Importa Playlist',
+        playlistPlaceholder: 'Incolla un URL di playlist pubblica Spotify o Apple Music…',
+        playlistHint: 'La playlist deve essere pubblica. Funziona con Spotify e Apple Music.',
+        translateTo: 'Traduci in', translateBtn: 'Traduci', importBtn: 'Importa',
+        statusFetching: 'Recupero testo…', statusTranslating: 'Testo recuperato. Traduzione…',
+        today: 'Oggi', translationsToday: n => `${n} traduzione${n == 1 ? '' : 'i'} oggi`,
+        tracks: n => `${n} brani`, loading: 'Caricamento…',
+        footer: 'Il contenuto è fornito solo per uso personale ed educativo. I testi rimangono proprietà dei rispettivi titolari dei diritti d\'autore.',
+        footerDmca: 'Per problemi di copyright o richieste di rimozione DMCA:',
+      },
+      Polish: {
+        tagline: 'Tłumacz Tekstów', title: 'Przetłumacz każdą piosenkę,', titleEm: 'linijka po linijce.',
+        subtitle: 'Wyszukaj piosenkę lub zaimportuj playlistę, wybierz język i czytaj wraz z muzyką.',
+        featured: 'Dziś polecane', listenAlong: 'Słuchaj',
+        tabSearch: 'Szukaj', tabPlaylist: 'Importuj playlistę', findSong: 'Znajdź piosenkę',
+        searchPlaceholder: 'Artysta, tytuł piosenki lub oba…', importPlaylist: 'Importuj playlistę',
+        playlistPlaceholder: 'Wklej publiczny URL playlisty Spotify lub Apple Music…',
+        playlistHint: 'Playlista musi być publiczna. Działa ze Spotify i Apple Music.',
+        translateTo: 'Przetłumacz na', translateBtn: 'Przetłumacz', importBtn: 'Importuj',
+        statusFetching: 'Pobieranie tekstu…', statusTranslating: 'Tekst pobrany. Tłumaczenie…',
+        today: 'Dziś', translationsToday: n => `${n} tłumaczenie${n == 1 ? '' : n < 5 ? 'a' : 'y'} dziś`,
+        tracks: n => `${n} utworów`, loading: 'Ładowanie…',
+        footer: 'Treści są udostępniane wyłącznie do użytku osobistego i edukacyjnego. Teksty piosenek pozostają własnością ich właścicieli praw autorskich.',
+        footerDmca: 'W przypadku problemów z prawami autorskimi lub wniosków DMCA:',
+      },
+      Dutch: {
+        tagline: 'Liedtekst Vertaler', title: 'Vertaal elk nummer,', titleEm: 'regel voor regel.',
+        subtitle: 'Zoek een nummer of importeer een afspeellijst, kies je taal en lees mee.',
+        featured: 'Vandaag uitgelicht', listenAlong: 'Luister mee',
+        tabSearch: 'Zoeken', tabPlaylist: 'Afspeellijst importeren', findSong: 'Nummer zoeken',
+        searchPlaceholder: 'Artiest, nummertitel of beide…', importPlaylist: 'Afspeellijst importeren',
+        playlistPlaceholder: 'Plak een openbare Spotify- of Apple Music-afspeellijst-URL…',
+        playlistHint: 'De afspeellijst moet openbaar zijn. Werkt met Spotify en Apple Music.',
+        translateTo: 'Vertalen naar', translateBtn: 'Vertalen', importBtn: 'Importeren',
+        statusFetching: 'Liedtekst ophalen…', statusTranslating: 'Liedtekst opgehaald. Vertalen…',
+        today: 'Vandaag', translationsToday: n => `${n} vertaling${n == 1 ? '' : 'en'} vandaag`,
+        tracks: n => `${n} nummers`, loading: 'Laden…',
+        footer: 'Inhoud wordt uitsluitend voor persoonlijk, educatief gebruik aangeboden. Liedteksten blijven eigendom van hun respectieve auteursrechthebbenden.',
+        footerDmca: 'Voor auteursrechtelijke vragen of DMCA-verzoeken:',
+      },
+      Swedish: {
+        tagline: 'Textöversättare', title: 'Översätt vilken låt som helst,', titleEm: 'rad för rad.',
+        subtitle: 'Sök efter en låt eller importera en spellista, välj ditt språk och läs med.',
+        featured: 'Utvalda idag', listenAlong: 'Lyssna med',
+        tabSearch: 'Sök', tabPlaylist: 'Importera spellista', findSong: 'Hitta en låt',
+        searchPlaceholder: 'Artist, låttitel eller båda…', importPlaylist: 'Importera spellista',
+        playlistPlaceholder: 'Klistra in en offentlig Spotify- eller Apple Music-spellista-URL…',
+        playlistHint: 'Spellistan måste vara offentlig. Fungerar med Spotify och Apple Music.',
+        translateTo: 'Översätt till', translateBtn: 'Översätt', importBtn: 'Importera',
+        statusFetching: 'Hämtar text…', statusTranslating: 'Text hämtad. Översätter…',
+        today: 'Idag', translationsToday: n => `${n} översättning${n == 1 ? '' : 'ar'} idag`,
+        tracks: n => `${n} spår`, loading: 'Laddar…',
+        footer: 'Innehåll tillhandahålls enbart för personligt, utbildningsmässigt bruk. Låttexter förblir respektive upphovsmäns egendom.',
+        footerDmca: 'För upphovsrättsfrågor eller DMCA-borttagningsbegäranden:',
+      },
+      Hebrew: {
+        tagline: 'מתרגם מילות שירים', title: 'תרגם כל שיר,', titleEm: 'שורה אחרי שורה.',
+        subtitle: 'חפש שיר או ייבא רשימת השמעה, בחר את השפה שלך וקרא יחד.',
+        featured: 'מומלץ היום', listenAlong: 'האזן',
+        tabSearch: 'חיפוש', tabPlaylist: 'ייבוא רשימה', findSong: 'מצא שיר',
+        searchPlaceholder: 'אמן, שם שיר, או שניהם…', importPlaylist: 'ייבוא רשימת השמעה',
+        playlistPlaceholder: 'הדבק קישור לרשימת השמעה ציבורית מ-Spotify או Apple Music…',
+        playlistHint: 'רשימת ההשמעה חייבת להיות ציבורית. עובד עם Spotify ו-Apple Music.',
+        translateTo: 'תרגם ל', translateBtn: 'תרגם', importBtn: 'ייבוא',
+        statusFetching: 'מביא מילות שיר…', statusTranslating: 'מילות השיר התקבלו. מתרגם…',
+        today: 'היום', translationsToday: n => `${n} תרגום${n == 1 ? '' : 'ים'} היום`,
+        tracks: n => `${n} שירים`, loading: 'טוען…',
+        footer: 'התוכן מסופק לשימוש אישי וחינוכי בלבד. מילות השירים הן רכוש בעלי זכויות היוצרים.',
+        footerDmca: 'לפניות בנושא זכויות יוצרים או בקשות הסרה DMCA:',
+      },
+    };
+
+    let activeUILang = 'English';
+    let activeUITr = UI_TRANSLATIONS.English;
+
+    function applyUILanguage(langKey) {
+      const tr = UI_TRANSLATIONS[langKey];
+      if (!tr) return;
+      activeUILang = langKey;
+      activeUITr = tr;
+
+      const isRTL = RTL_LANGUAGES.has(langKey);
+      document.documentElement.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+      document.documentElement.setAttribute('lang', langKey);
+
+      document.getElementById('logoTagline').textContent = tr.tagline;
+      document.getElementById('pageTitle').innerHTML = `${tr.title}<br><em>${tr.titleEm}</em>`;
+      document.getElementById('pageSubtitle').textContent = tr.subtitle;
+      document.getElementById('featuredLabelText').textContent = tr.featured;
+      document.getElementById('listenAlongText').textContent = tr.listenAlong;
+      document.getElementById('tabSearchText').textContent = tr.tabSearch;
+      document.getElementById('tabPlaylistText').textContent = tr.tabPlaylist;
+      document.getElementById('findSongText').textContent = tr.findSong;
+      document.getElementById('searchInput').placeholder = tr.searchPlaceholder;
+      document.getElementById('importPlaylistText').textContent = tr.importPlaylist;
+      document.getElementById('playlistUrl').placeholder = tr.playlistPlaceholder;
+      document.getElementById('playlistHintText').textContent = tr.playlistHint;
+      document.getElementById('translateToText').textContent = tr.translateTo;
+      document.getElementById('translateBtnText').textContent = tr.translateBtn;
+      document.getElementById('importBtnText').textContent = tr.importBtn;
+      document.getElementById('footerText').textContent = tr.footer;
+      document.getElementById('footerDmcaText').textContent = tr.footerDmca;
+
+      // Update active state in dropdown
+      document.querySelectorAll('.ui-lang-option').forEach(el =>
+        el.classList.toggle('active', el.dataset.lang === langKey)
+      );
+    }
+
+    // ── UI Language Selector setup ────────────────────────────────
+    const UI_LANG_LIST = [
+      { value: 'English', cc: 'us', native: 'English' },
+      { value: 'Spanish', cc: 'es', native: 'Español' },
+      { value: 'Mandarin Chinese', cc: 'cn', native: '普通话' },
+      { value: 'Hindi', cc: 'in', native: 'हिन्दी' },
+      { value: 'French', cc: 'fr', native: 'Français' },
+      { value: 'Arabic', cc: 'sa', native: 'العربية' },
+      { value: 'Russian', cc: 'ru', native: 'Русский' },
+      { value: 'Portuguese', cc: 'pt', native: 'Português' },
+      { value: 'German', cc: 'de', native: 'Deutsch' },
+      { value: 'Japanese', cc: 'jp', native: '日本語' },
+      { value: 'Korean', cc: 'kr', native: '한국어' },
+      { value: 'Turkish', cc: 'tr', native: 'Türkçe' },
+      { value: 'Italian', cc: 'it', native: 'Italiano' },
+      { value: 'Polish', cc: 'pl', native: 'Polski' },
+      { value: 'Dutch', cc: 'nl', native: 'Nederlands' },
+      { value: 'Swedish', cc: 'se', native: 'Svenska' },
+      { value: 'Hebrew', cc: 'il', native: 'עברית' },
+    ];
+
+    const uiLangSelector = document.getElementById('uiLangSelector');
+    const uiLangBtn = document.getElementById('uiLangBtn');
+    const uiLangFlag = document.getElementById('uiLangFlag');
+    const uiLangDropdown = document.getElementById('uiLangDropdown');
+
+    UI_LANG_LIST.forEach(lang => {
+      const div = document.createElement('div');
+      div.className = 'ui-lang-option' + (lang.value === 'English' ? ' active' : '');
+      div.dataset.lang = lang.value;
+      div.innerHTML = `<img class="ui-lang-flag-sm" src="https://flagcdn.com/w40/${lang.cc}.png" alt="${lang.cc}" loading="lazy"><span>${lang.native}</span>`;
+      div.addEventListener('click', () => {
+        const entry = UI_LANG_LIST.find(l => l.value === lang.value);
+        uiLangFlag.src = `https://flagcdn.com/w40/${entry.cc}.png`;
+        uiLangFlag.alt = entry.cc;
+        uiLangSelector.classList.remove('open');
+        applyUILanguage(lang.value);
+      });
+      uiLangDropdown.appendChild(div);
+    });
+
+    uiLangBtn.addEventListener('click', e => { e.stopPropagation(); uiLangSelector.classList.toggle('open'); });
 
     function switchTab(name) {
       document.getElementById('panel-search').classList.toggle('hidden', name !== 'search');
@@ -1406,6 +1838,7 @@
     document.addEventListener('click', e => {
       if (!e.target.closest('.search-wrapper')) closeDropdown();
       if (!e.target.closest('#langSelectWrapper')) document.getElementById('langSelectWrapper').classList.remove('open');
+      if (!e.target.closest('#uiLangSelector')) uiLangSelector.classList.remove('open');
     });
 
     async function importPlaylist() {
@@ -1417,7 +1850,7 @@
 
       const btn = document.getElementById('importBtn');
       btn.disabled = true;
-      btn.innerHTML = `<div class="spinner" style="width:13px;height:13px;border-width:2px;border-top-color:#fff;border-color:rgba(255,255,255,0.3)"></div> Loading…`;
+      btn.innerHTML = `<div class="spinner" style="width:13px;height:13px;border-width:2px;border-top-color:#fff;border-color:rgba(255,255,255,0.3)"></div> ${activeUITr.loading}`;
       errorBar.classList.remove('visible');
 
       try {
@@ -1428,13 +1861,13 @@
       } catch { showError('Could not fetch playlist. Please check the URL and try again.'); }
       finally {
         btn.disabled = false;
-        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Import`;
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> <span id="importBtnText">${activeUITr.importBtn}</span>`;
       }
     }
 
     function renderTrackList(tracks, source) {
       document.getElementById('trackListTitle').textContent = source + ' Playlist';
-      document.getElementById('trackCount').textContent = tracks.length + ' tracks';
+      document.getElementById('trackCount').textContent = activeUITr.tracks(tracks.length);
       document.getElementById('trackList').classList.add('visible');
       const container = document.getElementById('trackItems');
       container.innerHTML = '';
@@ -1461,17 +1894,15 @@
       if (!selectedSong) return;
       const targetLang = document.getElementById('targetLang').value;
       translateBtn.disabled = true;
-      statusText.textContent = 'Fetching lyrics…';
+      statusText.textContent = activeUITr.statusFetching;
       statusBar.classList.add('visible');
       errorBar.classList.remove('visible');
       resultCard.classList.remove('visible');
-      document.getElementById('cacheBadge').style.display = 'none';
-
       try {
         const lr = await fetch(`/api/lyrics?artist=${encodeURIComponent(selectedSong.artist)}&title=${encodeURIComponent(selectedSong.title)}`);
         const ld = await lr.json();
         if (ld.error) throw new Error(ld.error);
-        statusText.textContent = ld.fromCache ? 'Lyrics from cache. Translating…' : 'Lyrics fetched. Translating…';
+        statusText.textContent = activeUITr.statusTranslating;
         const tr = await fetch('/api/translate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1479,7 +1910,7 @@
         });
         const td = await tr.json();
         if (td.error) throw new Error(td.error);
-        renderResult(td, targetLang, td.fromCache);
+        renderResult(td, targetLang);
       } catch (err) {
         showError(err.message);
       } finally {
@@ -1488,7 +1919,7 @@
       }
     }
 
-    function renderResult(data, targetLang, fromCache) {
+    function renderResult(data, targetLang) {
       const isTargetRTL = RTL_LANGUAGES.has(targetLang);
       const isSourceRTL = RTL_LANGUAGES.has(data.sourceLanguage);
       document.getElementById('resultTitle').textContent = selectedSong.title;
@@ -1496,7 +1927,6 @@
       document.getElementById('langBadgeText').textContent = `${data.sourceLanguage} → ${targetLang}`;
       document.getElementById('colOriginal').textContent = data.sourceLanguage;
       document.getElementById('colTranslated').textContent = targetLang;
-      document.getElementById('cacheBadge').style.display = fromCache ? 'flex' : 'none';
       lyricsRows.innerHTML = '';
       data.lines.forEach(line => {
         const row = document.createElement('div');
@@ -1521,7 +1951,6 @@
     async function loadYoutubeEmbed(title, artist) {
       const section = document.getElementById('youtubeSection');
       const iframe = document.getElementById('youtubeIframe');
-      // Reset and hide while fetching
       section.classList.remove('visible');
       iframe.src = '';
       try {
@@ -1539,22 +1968,22 @@
 
     const LANGUAGES = [
       { value: 'English', label: 'English', native: 'English', cc: 'us' },
-      { value: 'Hebrew', label: 'Hebrew', native: 'עברית', cc: 'il' },
       { value: 'Spanish', label: 'Spanish', native: 'Español', cc: 'es' },
-      { value: 'French', label: 'French', native: 'Français', cc: 'fr' },
-      { value: 'German', label: 'German', native: 'Deutsch', cc: 'de' },
-      { value: 'Italian', label: 'Italian', native: 'Italiano', cc: 'it' },
-      { value: 'Portuguese', label: 'Portuguese', native: 'Português', cc: 'pt' },
-      { value: 'Japanese', label: 'Japanese', native: '日本語', cc: 'jp' },
-      { value: 'Korean', label: 'Korean', native: '한국어', cc: 'kr' },
       { value: 'Mandarin Chinese', label: 'Mandarin', native: '普通话', cc: 'cn' },
+      { value: 'Hindi', label: 'Hindi', native: 'हिन्दी', cc: 'in' },
+      { value: 'French', label: 'French', native: 'Français', cc: 'fr' },
       { value: 'Arabic', label: 'Arabic', native: 'العربية', cc: 'sa' },
       { value: 'Russian', label: 'Russian', native: 'Русский', cc: 'ru' },
-      { value: 'Hindi', label: 'Hindi', native: 'हिन्दी', cc: 'in' },
+      { value: 'Portuguese', label: 'Portuguese', native: 'Português', cc: 'pt' },
+      { value: 'German', label: 'German', native: 'Deutsch', cc: 'de' },
+      { value: 'Japanese', label: 'Japanese', native: '日本語', cc: 'jp' },
+      { value: 'Korean', label: 'Korean', native: '한국어', cc: 'kr' },
+      { value: 'Turkish', label: 'Turkish', native: 'Türkçe', cc: 'tr' },
+      { value: 'Italian', label: 'Italian', native: 'Italiano', cc: 'it' },
+      { value: 'Polish', label: 'Polish', native: 'Polski', cc: 'pl' },
       { value: 'Dutch', label: 'Dutch', native: 'Nederlands', cc: 'nl' },
       { value: 'Swedish', label: 'Swedish', native: 'Svenska', cc: 'se' },
-      { value: 'Turkish', label: 'Turkish', native: 'Türkçe', cc: 'tr' },
-      { value: 'Polish', label: 'Polish', native: 'Polski', cc: 'pl' },
+      { value: 'Hebrew', label: 'Hebrew', native: 'עברית', cc: 'il' },
     ];
 
     const langWrapper = document.getElementById('langSelectWrapper');
@@ -1600,12 +2029,12 @@
         const ranks = ['#1', '#2', '#3'];
         grid.innerHTML = data.songs.map((song, i) => `
         <div class="featured-card" onclick="featuredSelect('${esc(song.artist)}', '${esc(song.title)}')">
-          <div class="featured-rank">${ranks[i]} Today</div>
+          <div class="featured-rank">${ranks[i]} ${activeUITr.today}</div>
           <div class="featured-title">${esc(song.title)}</div>
           <div class="featured-artist">${esc(song.artist)}</div>
           <div class="featured-count">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            ${song.requests} translation${song.requests == 1 ? '' : 's'} today
+            ${activeUITr.translationsToday(song.requests)}
           </div>
         </div>
       `).join('');
@@ -1617,7 +2046,6 @@
     function featuredSelect(artist, title) {
       selectSong({ title, artist, thumbnail: null });
       searchInput.value = `${title} — ${artist}`;
-      // Switch to searcbh tab and scroll to card
       switchTab('search');
       document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
