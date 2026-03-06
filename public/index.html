@@ -1615,7 +1615,7 @@
     function featuredSelect(artist, title) {
       selectSong({ title, artist, thumbnail: null });
       searchInput.value = `${title} — ${artist}`;
-      // Switch to search tab and scroll to card
+      // Switch to searcbh tab and scroll to card
       switchTab('search');
       document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
