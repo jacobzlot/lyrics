@@ -61,11 +61,11 @@ function deepFindTracks(obj, found, depth) {
     for (var i = 0; i < obj.length; i++) {
       var item = obj[i];
       if (item && typeof item === 'object' && !Array.isArray(item)) {
-        var title  = item.title  || item.name  || (item.attributes && item.attributes.name);
+        var title = item.title || item.name || (item.attributes && item.attributes.name);
         var artist = item.artistName || (item.attributes && item.attributes.artistName)
-                   || (item.artist && item.artist.name) || item.subtitle;
+          || (item.artist && item.artist.name) || item.subtitle;
         if (title && artist && typeof title === 'string' && typeof artist === 'string'
-            && title.length > 0 && artist.length > 0) {
+          && title.length > 0 && artist.length > 0) {
           var artworkUrl = (item.artwork && item.artwork.url)
             || (item.attributes && item.attributes.artwork && item.attributes.artwork.url)
             || item.imageUrl
@@ -92,7 +92,7 @@ function deepFindTracks(obj, found, depth) {
 
 function dedupe(tracks) {
   var seen = {};
-  return tracks.filter(function(t) {
+  return tracks.filter(function (t) {
     var key = (t.title + '||' + t.artist).toLowerCase();
     if (seen[key]) return false;
     seen[key] = true;
@@ -221,6 +221,11 @@ app.post('/api/translate', async (req, res) => {
         [songId, targetLanguage]
       );
       if (cached.rows[0] && cached.rows[0].lines) {
+        pool.query(
+          'INSERT INTO translation_log (song_id, language) VALUES ($1, $2)',
+          [songId, targetLanguage]
+        ).catch(() => { });
+
         return res.json({
           sourceLanguage: cached.rows[0].source_lang,
           lines: cached.rows[0].lines,
@@ -276,7 +281,7 @@ For blank lines between verses, use: { "original": "", "translated": "" }`
       pool.query(
         'INSERT INTO translation_log (song_id, language) VALUES ($1, $2)',
         [songId, targetLanguage]
-      ).catch(() => {});
+      ).catch(() => { });
     }
 
     res.json(result);
@@ -309,14 +314,14 @@ app.get('/api/playlist/spotify', async (req, res) => {
     const raw = $('#__NEXT_DATA__').text();
     if (!raw) return res.status(422).json({ error: 'Could not read Spotify embed data. Make sure the playlist is public.' });
 
-    const json  = JSON.parse(raw);
+    const json = JSON.parse(raw);
     const items = json &&
-                  json.props &&
-                  json.props.pageProps &&
-                  json.props.pageProps.state &&
-                  json.props.pageProps.state.data &&
-                  json.props.pageProps.state.data.entity &&
-                  json.props.pageProps.state.data.entity.trackList || [];
+      json.props &&
+      json.props.pageProps &&
+      json.props.pageProps.state &&
+      json.props.pageProps.state.data &&
+      json.props.pageProps.state.data.entity &&
+      json.props.pageProps.state.data.entity.trackList || [];
 
     if (!items.length) {
       return res.status(422).json({ error: 'No tracks found. Make sure the playlist is set to public.' });
