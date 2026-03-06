@@ -1321,11 +1321,13 @@
   </footer>
 
   <script>
-    const u = 'jzlotnitsky';
-    const d = 'gmail.com';
-    const link = document.getElementById('contact-link');
-    link.href = 'mailto:' + u + '@' + d;
-    link.textContent = u + '@' + d;
+    document.addEventListener('DOMContentLoaded', function () {
+      const u = 'jzlotnitsky';
+      const d = 'gmail.com';
+      const link = document.getElementById('contact-link');
+      link.href = 'mailto:' + u + '@' + d;
+      link.textContent = u + '@' + d;
+    });
   </script>
   <script>
     const RTL_LANGUAGES = new Set(['Hebrew', 'Arabic']);
