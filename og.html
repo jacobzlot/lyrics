@@ -661,6 +661,8 @@
     }
 
     .col-header-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       background: var(--surface);
       border-bottom: 1px solid var(--rule);
     }
@@ -674,7 +676,13 @@
       color: var(--ink-light);
     }
 
+    .col-header:first-child {
+      border-right: 1px solid var(--rule);
+    }
+
     .lyric-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       border-bottom: 1px solid var(--rule);
       transition: background 0.1s;
     }
@@ -691,6 +699,15 @@
       padding: 13px 40px;
       font-size: 0.875rem;
       line-height: 1.7;
+      color: var(--ink);
+    }
+
+    .lyric-cell.original {
+      border-right: 1px solid var(--rule);
+      color: var(--ink-mid);
+    }
+
+    .lyric-cell.translated {
       color: var(--ink);
       font-weight: 400;
     }
@@ -867,7 +884,25 @@
 
       .lyric-cell.original {
         border-right: none;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .lyric-row {
+        grid-template-columns: 1fr;
+      }
+
+      .col-header-row {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .col-header:first-child {
+        border-right: none;
         border-bottom: none;
+      }
+
+      .col-header:last-child {
+        text-align: right;
       }
 
       .playlist-url-row {
@@ -1025,12 +1060,6 @@
       width: 100%;
       height: 100%;
       border: none;
-    }
-
-    .genius-link:hover {
-      background: var(--surface);
-      border-color: var(--ink-mid);
-      color: var(--ink);
     }
 
     /* ── UI Language Selector (header) ── */
@@ -1367,16 +1396,11 @@
             </svg>
             <span id="langBadgeText"></span>
           </div>
-          <a id="geniusLink" href="#" target="_blank" rel="noopener noreferrer" class="lang-badge genius-link" style="display:none; text-decoration:none;">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-            </svg>
-            Genius
-          </a>
         </div>
       </div>
       <div class="col-header-row">
-        <div class="col-header" id="colTranslated">Translation</div>
+        <div class="col-header" id="colOriginal">Original</div>
+        <div class="col-header" id="colTranslated" style="text-align: right;">Translation</div>
       </div>
       <div class="lyrics-rows" id="lyricsRows"></div>
     </div>
@@ -1429,7 +1453,6 @@
         tracks: n => `${n} tracks`, loading: 'Loading…',
         footer: 'Content is provided for personal, educational use only. Lyrics remain the property of their respective copyright holders.',
         footerDmca: 'For copyright concerns or DMCA takedown requests:',
-        sameLanguageError: lang => `This song is already in ${lang}.`,
       },
       Spanish: {
         tagline: 'Traductor de Letras', title: 'Traduce cualquier canción,', titleEm: 'línea por línea.',
@@ -1445,7 +1468,6 @@
         tracks: n => `${n} canciones`, loading: 'Cargando…',
         footer: 'El contenido se proporciona solo para uso personal y educativo. Las letras son propiedad de sus respectivos titulares de derechos de autor.',
         footerDmca: 'Para inquietudes de derechos de autor o solicitudes DMCA:',
-        sameLanguageError: lang => `Esta canción ya está en ${lang}.`,
       },
       'Mandarin Chinese': {
         tagline: '歌词翻译器', title: '翻译任何歌曲，', titleEm: '逐行翻译。',
@@ -1461,7 +1483,6 @@
         tracks: n => `${n} 首`, loading: '加载中…',
         footer: '内容仅供个人学习使用。歌词版权归其各自版权所有者所有。',
         footerDmca: '如有版权问题或DMCA删除请求：',
-        sameLanguageError: lang => `这首歌已经是${lang}了。`,
       },
       Hindi: {
         tagline: 'गीत अनुवादक', title: 'किसी भी गाने का अनुवाद करें,', titleEm: 'लाइन दर लाइन।',
@@ -1477,7 +1498,6 @@
         tracks: n => `${n} ट्रैक`, loading: 'लोड हो रहा है…',
         footer: 'सामग्री केवल व्यक्तिगत, शैक्षिक उपयोग के लिए है। गीत अपने संबंधित कॉपीराइट धारकों की संपत्ति हैं।',
         footerDmca: 'कॉपीराइट संबंधी चिंताओं या DMCA अनुरोधों के लिए:',
-        sameLanguageError: lang => `यह गाना पहले से ${lang} में है।`,
       },
       French: {
         tagline: 'Traducteur de Paroles', title: 'Traduisez n\'importe quelle chanson,', titleEm: 'ligne par ligne.',
@@ -1493,7 +1513,6 @@
         tracks: n => `${n} pistes`, loading: 'Chargement…',
         footer: 'Le contenu est fourni à des fins personnelles et éducatives uniquement. Les paroles restent la propriété de leurs détenteurs de droits respectifs.',
         footerDmca: 'Pour les questions de droits d\'auteur ou demandes DMCA :',
-        sameLanguageError: lang => `Cette chanson est déjà en ${lang}.`,
       },
       Arabic: {
         tagline: 'مترجم الأغاني', title: 'ترجم أي أغنية،', titleEm: 'سطرًا بسطر.',
@@ -1509,7 +1528,6 @@
         tracks: n => `${n} مقاطع`, loading: 'جارٍ التحميل…',
         footer: 'يُقدَّم المحتوى للاستخدام الشخصي والتعليمي فقط. كلمات الأغاني ملك لأصحاب حقوق الطبع والنشر.',
         footerDmca: 'لمخاوف حقوق الطبع والنشر أو طلبات إزالة DMCA:',
-        sameLanguageError: lang => `هذه الأغنية بالفعل بالـ${lang}.`,
       },
       Russian: {
         tagline: 'Переводчик текстов', title: 'Переводи любую песню,', titleEm: 'строка за строкой.',
@@ -1525,7 +1543,6 @@
         tracks: n => `${n} треков`, loading: 'Загрузка…',
         footer: 'Контент предоставляется только для личного образовательного использования. Тексты песен являются собственностью их правообладателей.',
         footerDmca: 'По вопросам авторских прав или DMCA-запросам:',
-        sameLanguageError: lang => `Эта песня уже на ${lang}.`,
       },
       Portuguese: {
         tagline: 'Tradutor de Letras', title: 'Traduza qualquer música,', titleEm: 'linha por linha.',
@@ -1541,7 +1558,6 @@
         tracks: n => `${n} faixas`, loading: 'Carregando…',
         footer: 'O conteúdo é fornecido apenas para uso pessoal e educacional. As letras permanecem propriedade de seus respectivos detentores de direitos autorais.',
         footerDmca: 'Para questões de direitos autorais ou pedidos de remoção DMCA:',
-        sameLanguageError: lang => `Esta música já está em ${lang}.`,
       },
       German: {
         tagline: 'Liedtext-Übersetzer', title: 'Übersetze jeden Song,', titleEm: 'Zeile für Zeile.',
@@ -1557,7 +1573,6 @@
         tracks: n => `${n} Titel`, loading: 'Laden…',
         footer: 'Inhalte werden ausschließlich für den persönlichen, bildungsbezogenen Gebrauch bereitgestellt. Liedtexte bleiben Eigentum ihrer jeweiligen Urheberrechtsinhaber.',
         footerDmca: 'Bei Urheberrechtsfragen oder DMCA-Anfragen:',
-        sameLanguageError: lang => `Dieser Song ist bereits auf ${lang}.`,
       },
       Japanese: {
         tagline: '歌詞翻訳', title: 'どんな曲も翻訳、', titleEm: '一行ずつ。',
@@ -1573,7 +1588,6 @@
         tracks: n => `${n}曲`, loading: '読み込み中…',
         footer: 'コンテンツは個人的・教育的利用のみを目的として提供されています。歌詞の著作権はそれぞれの権利者に帰属します。',
         footerDmca: '著作権に関するお問い合わせやDMCA申請：',
-        sameLanguageError: lang => `この曲はすでに${lang}です。`,
       },
       Korean: {
         tagline: '가사 번역기', title: '모든 노래를 번역하세요,', titleEm: '한 줄씩.',
@@ -1589,7 +1603,6 @@
         tracks: n => `${n}곡`, loading: '로딩 중…',
         footer: '콘텐츠는 개인적, 교육적 목적으로만 제공됩니다. 가사는 해당 저작권자의 소유입니다.',
         footerDmca: '저작권 문의 또는 DMCA 삭제 요청:',
-        sameLanguageError: lang => `이 노래는 이미 ${lang}입니다.`,
       },
       Turkish: {
         tagline: 'Şarkı Sözü Çevirici', title: 'Herhangi bir şarkıyı çevir,', titleEm: 'satır satır.',
@@ -1605,7 +1618,6 @@
         tracks: n => `${n} parça`, loading: 'Yükleniyor…',
         footer: 'İçerik yalnızca kişisel ve eğitim amaçlı sunulmaktadır. Şarkı sözleri ilgili telif hakkı sahiplerinin mülkiyetindedir.',
         footerDmca: 'Telif hakkı sorunları veya DMCA kaldırma istekleri için:',
-        sameLanguageError: lang => `Bu şarkı zaten ${lang} dilinde.`,
       },
       Italian: {
         tagline: 'Traduttore di Testi', title: 'Traduci qualsiasi canzone,', titleEm: 'riga per riga.',
@@ -1621,7 +1633,6 @@
         tracks: n => `${n} brani`, loading: 'Caricamento…',
         footer: 'Il contenuto è fornito solo per uso personale ed educativo. I testi rimangono proprietà dei rispettivi titolari dei diritti d\'autore.',
         footerDmca: 'Per problemi di copyright o richieste di rimozione DMCA:',
-        sameLanguageError: lang => `Questa canzone è già in ${lang}.`,
       },
       Polish: {
         tagline: 'Tłumacz Tekstów', title: 'Przetłumacz każdą piosenkę,', titleEm: 'linijka po linijce.',
@@ -1637,7 +1648,6 @@
         tracks: n => `${n} utworów`, loading: 'Ładowanie…',
         footer: 'Treści są udostępniane wyłącznie do użytku osobistego i edukacyjnego. Teksty piosenek pozostają własnością ich właścicieli praw autorskich.',
         footerDmca: 'W przypadku problemów z prawami autorskimi lub wniosków DMCA:',
-        sameLanguageError: lang => `Ta piosenka jest już w języku ${lang}.`,
       },
       Dutch: {
         tagline: 'Liedtekst Vertaler', title: 'Vertaal elk nummer,', titleEm: 'regel voor regel.',
@@ -1653,7 +1663,6 @@
         tracks: n => `${n} nummers`, loading: 'Laden…',
         footer: 'Inhoud wordt uitsluitend voor persoonlijk, educatief gebruik aangeboden. Liedteksten blijven eigendom van hun respectieve auteursrechthebbenden.',
         footerDmca: 'Voor auteursrechtelijke vragen of DMCA-verzoeken:',
-        sameLanguageError: lang => `Dit nummer is al in het ${lang}.`,
       },
       Swedish: {
         tagline: 'Textöversättare', title: 'Översätt vilken låt som helst,', titleEm: 'rad för rad.',
@@ -1669,7 +1678,6 @@
         tracks: n => `${n} spår`, loading: 'Laddar…',
         footer: 'Innehåll tillhandahålls enbart för personligt, utbildningsmässigt bruk. Låttexter förblir respektive upphovsmäns egendom.',
         footerDmca: 'För upphovsrättsfrågor eller DMCA-borttagningsbegäranden:',
-        sameLanguageError: lang => `Den här låten är redan på ${lang}.`,
       },
       Hebrew: {
         tagline: 'מתרגם מילות שירים', title: 'תרגם כל שיר,', titleEm: 'שורה אחרי שורה.',
@@ -1685,7 +1693,6 @@
         tracks: n => `${n} שירים`, loading: 'טוען…',
         footer: 'התוכן מסופק לשימוש אישי וחינוכי בלבד. מילות השירים הן רכוש בעלי זכויות היוצרים.',
         footerDmca: 'לפניות בנושא זכויות יוצרים או בקשות הסרה DMCA:',
-        sameLanguageError: lang => `השיר הזה כבר ב${lang}.`,
       },
     };
 
@@ -1891,7 +1898,6 @@
       statusBar.classList.add('visible');
       errorBar.classList.remove('visible');
       resultCard.classList.remove('visible');
-      document.getElementById('geniusLink').style.display = 'none';
       try {
         const lr = await fetch(`/api/lyrics?artist=${encodeURIComponent(selectedSong.artist)}&title=${encodeURIComponent(selectedSong.title)}`);
         const ld = await lr.json();
@@ -1904,10 +1910,7 @@
         });
         const td = await tr.json();
         if (td.error) throw new Error(td.error);
-        if (td.sourceLanguage && td.sourceLanguage.toLowerCase() === targetLang.toLowerCase()) {
-          throw new Error(activeUITr.sameLanguageError(targetLang));
-        }
-        renderResult(td, targetLang, ld.geniusUrl || null);
+        renderResult(td, targetLang);
       } catch (err) {
         showError(err.message);
       } finally {
@@ -1916,32 +1919,25 @@
       }
     }
 
-    function renderResult(data, targetLang, geniusUrl) {
+    function renderResult(data, targetLang) {
       const isTargetRTL = RTL_LANGUAGES.has(targetLang);
+      const isSourceRTL = RTL_LANGUAGES.has(data.sourceLanguage);
       document.getElementById('resultTitle').textContent = selectedSong.title;
       document.getElementById('resultArtist').textContent = selectedSong.artist;
-      document.getElementById('langBadgeText').textContent = targetLang;
+      document.getElementById('langBadgeText').textContent = `${data.sourceLanguage} → ${targetLang}`;
+      document.getElementById('colOriginal').textContent = data.sourceLanguage;
       document.getElementById('colTranslated').textContent = targetLang;
-      const geniusLink = document.getElementById('geniusLink');
-      if (geniusUrl) {
-        geniusLink.href = geniusUrl;
-        geniusLink.style.display = 'flex';
-      } else {
-        geniusLink.style.display = 'none';
-      }
       lyricsRows.innerHTML = '';
       data.lines.forEach(line => {
         const row = document.createElement('div');
-        if (!line.translated) {
+        if (!line.original && !line.translated) {
           row.className = 'lyric-row blank';
-          row.innerHTML = '<div class="lyric-cell"></div>';
+          row.innerHTML = '<div class="lyric-cell original"></div><div class="lyric-cell translated"></div>';
         } else {
           row.className = 'lyric-row';
-          const t = document.createElement('div');
-          t.className = 'lyric-cell';
-          t.textContent = line.translated;
-          if (isTargetRTL) t.setAttribute('dir', 'rtl');
-          row.appendChild(t);
+          const o = document.createElement('div'); o.className = 'lyric-cell original'; o.textContent = line.original; if (isSourceRTL) o.setAttribute('dir', 'rtl');
+          const t = document.createElement('div'); t.className = 'lyric-cell translated'; t.textContent = line.translated; if (isTargetRTL) t.setAttribute('dir', 'rtl');
+          row.appendChild(o); row.appendChild(t);
         }
         lyricsRows.appendChild(row);
       });
