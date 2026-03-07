@@ -1907,7 +1907,7 @@
         if (td.sourceLanguage && td.sourceLanguage.toLowerCase() === targetLang.toLowerCase()) {
           throw new Error(activeUITr.sameLanguageError(targetLang));
         }
-        renderResult(td, targetLang);
+        renderResult(td, targetLang, ld.geniusUrl || null);
       } catch (err) {
         showError(err.message);
       } finally {
@@ -1916,16 +1916,19 @@
       }
     }
 
-    function renderResult(data, targetLang) {
+    function renderResult(data, targetLang, geniusUrl) {
       const isTargetRTL = RTL_LANGUAGES.has(targetLang);
       document.getElementById('resultTitle').textContent = selectedSong.title;
       document.getElementById('resultArtist').textContent = selectedSong.artist;
       document.getElementById('langBadgeText').textContent = targetLang;
       document.getElementById('colTranslated').textContent = targetLang;
       const geniusLink = document.getElementById('geniusLink');
-      const geniusQuery = encodeURIComponent(`${selectedSong.artist} ${selectedSong.title} lyrics`);
-      geniusLink.href = `https://genius.com/search?q=${geniusQuery}`;
-      geniusLink.style.display = 'flex';
+      if (geniusUrl) {
+        geniusLink.href = geniusUrl;
+        geniusLink.style.display = 'flex';
+      } else {
+        geniusLink.style.display = 'none';
+      }
       lyricsRows.innerHTML = '';
       data.lines.forEach(line => {
         const row = document.createElement('div');

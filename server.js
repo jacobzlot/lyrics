@@ -138,6 +138,7 @@ app.get('/api/lyrics', async (req, res) => {
   } catch (e) { console.error('DB read error:', e.message); }
 
   let lyrics = null;
+  let geniusUrl = null;
 
   try {
     const s = await axios.get('https://api.genius.com/search', {
@@ -146,6 +147,7 @@ app.get('/api/lyrics', async (req, res) => {
     });
     const hit = s.data.response.hits[0];
     if (hit) {
+      geniusUrl = hit.result.url;
       const p = await axios.get(hit.result.url, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -196,7 +198,7 @@ app.get('/api/lyrics', async (req, res) => {
     );
   } catch (e) { console.error('DB write error:', e.message); }
 
-  res.json({ lyrics });
+  res.json({ lyrics, geniusUrl });
 });
 
 // ── 3. Translate (DB cache → GPT-4o) ──────────────────────────────────────────
